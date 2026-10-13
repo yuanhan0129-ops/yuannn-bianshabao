@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5efe4" />
-    <title>情緒能量補給站</title>
+    <meta name="theme-color" content="#f4edda" />
+    <title>皮卡丘快跑！</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
     <script defer src="game.js"></script>
@@ -12,29 +12,29 @@
   <body>
     <main class="page-shell">
       <header class="page-header">
-        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div class="brand-mark" aria-hidden="true"><span class="ear left"></span><span class="face">⚡</span><span class="ear right"></span></div>
         <div>
-          <p class="eyebrow">CLASSROOM · RESET & PLAY</p>
-          <h1>情緒能量補給站</h1>
-          <p class="subtitle">把壓力交給沙包和泡泡，讓心情慢慢回到舒服的位置。</p>
+          <p class="eyebrow">PIKA RUN · ENDLESS DASH</p>
+          <h1>皮卡丘快跑！</h1>
+          <p class="subtitle">跳過仙人掌、躲開飛鳥，看看今天能跑出多高的分數。</p>
         </div>
-        <div class="header-note"><span class="note-dot"></span>安全釋放，照顧自己</div>
+        <div class="header-note"><span class="note-dot"></span>無限奔跑 · 挑戰最高分</div>
       </header>
 
-      <section class="game-card" aria-label="情緒能量補給站遊戲">
+      <section class="game-card" aria-label="皮卡丘快跑遊戲">
         <div class="game-toolbar">
-          <div class="toolbar-label"><span class="toolbar-icon">✳</span> 今日補給任務</div>
-          <div class="goal-pill">集滿 <strong>100</strong> 能量完成任務</div>
+          <div class="toolbar-label"><span class="toolbar-icon">✦</span> 跑酷挑戰</div>
+          <div class="goal-pill">閃避障礙，累積你的最高紀錄</div>
         </div>
         <div id="game-root" class="game-root"></div>
         <div class="game-footer">
-          <div class="control-hint"><span class="keycap">←</span><span class="keycap">→</span> 移動角色</div>
-          <div class="control-hint"><span class="keycap wide">空白鍵</span> 揮拳打沙包</div>
-          <div class="control-hint"><span class="tap-icon">●</span> 點擊泡泡，輕鬆消除壓力</div>
+          <div class="control-hint"><span class="keycap wide">空白鍵</span><span class="keycap">↑</span> 跳躍</div>
+          <div class="control-hint"><span class="keycap">↓</span> 蹲下躲飛鳥</div>
+          <div class="control-hint"><span class="tap-icon">●</span> 點擊左側跳躍，按住右側蹲下</div>
         </div>
       </section>
 
-      <p class="gentle-reminder">如果現在心情很滿，先停一下、深呼吸，也可以找信任的大人聊聊。</p>
+      <p class="gentle-reminder">小提醒：準備好就開始，撞到障礙後點一下或按 R 再跑一次。</p>
     </main>
   </body>
 </html>
