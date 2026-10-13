@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  color-scheme: light;
+  font-family: 'Nunito', 'Noto Sans TC', system-ui, sans-serif;
+  color: #253c42;
+  background: #f5efe4;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(237, 193, 126, .2), transparent 27rem),
+    radial-gradient(ellipse at 93% 90%, rgba(111, 169, 154, .15), transparent 28rem),
+    #f5efe4;
+}
+
+.page-shell { width: min(1040px, calc(100% - 36px)); margin: 0 auto; padding: 42px 0 30px; }
+.page-header { display: flex; align-items: center; gap: 17px; margin: 0 0 24px 4px; }
+.brand-mark { display: grid; width: 54px; height: 54px; place-items: center; flex: 0 0 54px; border-radius: 18px; background: #315a59; color: #f5d892; font-size: 30px; box-shadow: 0 8px 18px rgba(42, 74, 70, .16); }
+.eyebrow { margin: 0 0 4px; color: #72918a; font-size: 10px; font-weight: 900; letter-spacing: .2em; }
+h1 { margin: 0; color: #253c42; font-size: clamp(25px, 4vw, 34px); font-weight: 900; letter-spacing: .03em; line-height: 1.15; }
+.subtitle { margin: 7px 0 0; color: #71807b; font-size: 14px; }
+.header-note { display: flex; align-items: center; gap: 8px; margin-left: auto; padding: 10px 14px; border: 1px solid #dce4d6; border-radius: 999px; background: rgba(255,255,255,.52); color: #55776c; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.note-dot { width: 8px; height: 8px; border-radius: 50%; background: #7aae80; box-shadow: 0 0 0 4px rgba(122,174,128,.14); }
+.game-card { overflow: hidden; border: 1px solid rgba(68, 91, 81, .12); border-radius: 22px; background: #fffdf8; box-shadow: 0 22px 55px rgba(74, 67, 45, .12), 0 3px 8px rgba(74, 67, 45, .05); }
+.game-toolbar { display: flex; min-height: 57px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 21px; border-bottom: 1px solid #eee9de; }
+.toolbar-label { color: #596d65; font-size: 13px; font-weight: 800; letter-spacing: .04em; }
+.toolbar-icon { margin-right: 7px; color: #dcaa54; font-size: 18px; vertical-align: -1px; }
+.goal-pill { padding: 7px 12px; border-radius: 999px; background: #eff5e9; color: #617659; font-size: 12px; font-weight: 700; }
+.goal-pill strong { color: #397e66; font-size: 14px; }
+.game-root { width: 100%; background: #e9eddf; line-height: 0; }
+.game-root canvas { display: block; width: 100% !important; height: auto !important; outline: none; }
+.game-footer { display: flex; min-height: 55px; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px 24px; padding: 10px 18px; border-top: 1px solid #eee9de; color: #66766e; font-size: 12px; }
+.control-hint { display: flex; align-items: center; gap: 5px; }
+.keycap { display: inline-grid; min-width: 23px; height: 23px; place-items: center; padding: 0 5px; border: 1px solid #dce1d8; border-bottom-width: 2px; border-radius: 6px; background: #fbfcf8; color: #52675e; font-size: 11px; font-weight: 800; }
+.keycap.wide { min-width: 55px; }
+.tap-icon { color: #e6a25e; font-size: 14px; }
+.gentle-reminder { margin: 16px 4px 0; color: #839088; text-align: center; font-size: 12px; letter-spacing: .02em; }
+
+@media (max-width: 650px) {
+  .page-shell { width: min(100% - 20px, 520px); padding-top: 24px; }
+  .page-header { gap: 12px; margin-left: 1px; }
+  .brand-mark { width: 45px; height: 45px; flex-basis: 45px; border-radius: 15px; font-size: 25px; }
+  .subtitle { max-width: 280px; font-size: 12px; line-height: 1.5; }
+  .header-note { display: none; }
+  .game-card { border-radius: 16px; }
+  .game-toolbar { min-height: 50px; padding: 0 13px; }
+  .toolbar-label { font-size: 12px; }
+  .goal-pill { padding: 6px 9px; font-size: 11px; }
+  .game-footer { justify-content: flex-start; gap: 8px 14px; padding: 11px 13px; font-size: 11px; }
+}
