@@ -427,8 +427,6 @@ class PikachuRun extends Phaser.Scene {
     this.scoreText = this.add.text(48, 47, '00000', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '23px', color: '#394949', fontStyle: '900' }).setDepth(19);
     this.add.text(795, 34, 'BEST', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '11px', color: '#879080', fontStyle: '900', letterSpacing: 2 }).setDepth(19);
     this.bestText = this.add.text(795, 49, this.formatScore(this.best), { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '21px', color: '#5b7d69', fontStyle: '900' }).setDepth(19);
-    this.stageText = this.add.text(480, 51, '', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '14px', color: '#748174', fontStyle: '900' }).setOrigin(.5).setDepth(19);
-    this.updateStageLabel();
     this.noticeText = this.add.text(WIDTH / 2, 111, '', {
       fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '17px', color: '#634b24', fontStyle: '900',
       backgroundColor: '#fff6cc', padding: { left: 16, right: 16, top: 9, bottom: 9 },
@@ -474,11 +472,6 @@ class PikachuRun extends Phaser.Scene {
     else this.jump();
   }
 
-  updateStageLabel() {
-    const labels = ['場景 1 · 沙漠', '場景 2 · 海灘', '場景 3 · 台北都市'];
-    this.stageText?.setText(labels[this.stage] || labels[0]);
-  }
-
   showReadyOverlay() {
     this.overlay = this.add.container(0, 0).setDepth(30);
     const shade = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, 0x263a38, .12);
@@ -486,7 +479,7 @@ class PikachuRun extends Phaser.Scene {
     card.fillStyle(0xfffcf3, .97); card.fillRoundedRect(282, 169, 396, 220, 24);
     card.lineStyle(2, 0xd7d8c2, 1); card.strokeRoundedRect(282, 169, 396, 220, 24);
     const title = this.add.text(WIDTH / 2, 207, '皮卡丘快跑！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '29px', color: '#414a43', fontStyle: '900' }).setOrigin(.5);
-    const copy = this.add.text(WIDTH / 2, 251, '500、1000 分前往新場景，每 500 分速度加快\n超過 1500 分後繼續跑，倒下時挑戰成功！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '13px', color: '#778175', align: 'center', lineSpacing: 5 }).setOrigin(.5);
+    const copy = this.add.text(WIDTH / 2, 251, '跳過障礙；遇到敵人時按 Z\n使出十萬伏特擊倒牠！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '13px', color: '#778175', align: 'center', lineSpacing: 5 }).setOrigin(.5);
     const button = this.add.rectangle(WIDTH / 2, 316, 182, 48, 0xe8bb50).setInteractive({ useHandCursor: true });
     const buttonText = this.add.text(WIDTH / 2, 316, '開始奔跑', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '16px', color: '#423b2a', fontStyle: '900' }).setOrigin(.5);
     const hint = this.add.text(WIDTH / 2, 363, '空白鍵 / ↑ / 點擊開始', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '12px', color: '#9a9a85' }).setOrigin(.5);
@@ -576,10 +569,7 @@ class PikachuRun extends Phaser.Scene {
     this.obstacles = [];
     this.spawnIn = 1500;
     this.drawStageBackground();
-    this.updateStageLabel();
-    const names = ['沙漠', '海灘', '台北都市'];
     this.cameras.main.flash(420, 255, 255, 255);
-    this.showNotice(`場景 ${stage + 1}/3：${names[stage]}`, 1500);
   }
 
   update(time, delta) {

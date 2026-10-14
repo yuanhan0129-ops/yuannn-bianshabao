@@ -37,7 +37,6 @@ h1 { margin: 0; color: #344341; font-size: clamp(25px, 4vw, 34px); font-weight: 
 .game-toolbar { display: flex; min-height: 57px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 21px; border-bottom: 1px solid #eee9de; }
 .toolbar-label { color: #596d61; font-size: 13px; font-weight: 800; letter-spacing: .04em; }
 .toolbar-icon { margin-right: 7px; color: #d9ae43; font-size: 18px; vertical-align: -1px; }
-.goal-pill { padding: 7px 12px; border-radius: 999px; background: #f4f0df; color: #7b795b; font-size: 12px; font-weight: 700; }
 .game-root { width: 100%; background: #f4edda; line-height: 0; touch-action: none; }
 .game-root canvas { display: block; width: 100% !important; height: auto !important; outline: none; touch-action: none; }
 .game-footer { display: flex; min-height: 55px; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px 24px; padding: 10px 18px; border-top: 1px solid #eee9de; color: #66766e; font-size: 12px; }
@@ -66,6 +65,5 @@ h1 { margin: 0; color: #344341; font-size: clamp(25px, 4vw, 34px); font-weight: 
   .game-card { border-radius: 16px; }
   .game-toolbar { min-height: 50px; padding: 0 13px; }
   .toolbar-label { font-size: 12px; }
-  .goal-pill { padding: 6px 9px; font-size: 10px; }
   .game-footer { justify-content: flex-start; gap: 8px 14px; padding: 11px 13px; font-size: 11px; }
 }
