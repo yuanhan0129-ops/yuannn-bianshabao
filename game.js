@@ -373,18 +373,31 @@ class PikachuRun extends Phaser.Scene {
           }
         }
       });
-      this.backdrop.fillStyle(0x65938e, 1); this.backdrop.lineStyle(3, 0x426a68, 1);
-      this.backdrop.fillRect(438, 207, 83, 235); this.backdrop.strokeRect(438, 207, 83, 235);
-      for (let tier = 0; tier < 7; tier++) {
-        const y = 220 + tier * 29;
-        const inset = Math.floor(tier / 2) * 4;
-        this.backdrop.fillStyle(tier % 2 ? 0x6ea49a : 0x56867f, 1);
-        this.backdrop.fillRect(430 + inset, y, 99 - inset * 2, 18);
-        this.backdrop.lineStyle(2, 0xc3d9b7, .72); this.backdrop.lineBetween(437 + inset, y + 14, 522 - inset, y + 14);
-      }
-      this.backdrop.fillStyle(0x5a8581, 1); this.backdrop.fillRect(473, 181, 14, 27);
-      this.backdrop.fillStyle(0x729b93, 1); this.backdrop.fillTriangle(480, 163, 470, 184, 490, 184);
       this.backdrop.fillStyle(0x697c7d, 1); this.backdrop.fillRect(0, 398, WIDTH, 46);
+      this.backdrop.fillStyle(0x43605e, .22); this.backdrop.fillEllipse(480, 437, 166, 24);
+      const towerTiers = [
+        { y: 366, width: 132, height: 76, color: 0x4c827b },
+        { y: 312, width: 120, height: 54, color: 0x568e84 },
+        { y: 258, width: 108, height: 54, color: 0x4e857d },
+        { y: 208, width: 96, height: 50, color: 0x5a9287 },
+        { y: 169, width: 84, height: 39, color: 0x4e827c },
+        { y: 138, width: 72, height: 31, color: 0x639a8c },
+        { y: 112, width: 60, height: 26, color: 0x51857d },
+      ];
+      towerTiers.forEach((tier, index) => {
+        const x = 480 - tier.width / 2;
+        this.backdrop.fillStyle(tier.color, 1); this.backdrop.lineStyle(3, 0x355f5c, 1);
+        this.backdrop.fillRect(x, tier.y, tier.width, tier.height); this.backdrop.strokeRect(x, tier.y, tier.width, tier.height);
+        this.backdrop.fillStyle(index % 2 ? 0x8db8a4 : 0x77aa9b, 1);
+        this.backdrop.fillRect(x - 5, tier.y + tier.height - 9, tier.width + 10, 7);
+        this.backdrop.lineStyle(2, 0xc4ddbd, .8);
+        for (let windowX = x + 12; windowX < x + tier.width - 5; windowX += 14) {
+          this.backdrop.lineBetween(windowX, tier.y + 8, windowX, tier.y + tier.height - 12);
+        }
+        this.backdrop.lineStyle(2, 0xd7e5c3, .8); this.backdrop.lineBetween(x + 8, tier.y + tier.height / 2, x + tier.width - 8, tier.y + tier.height / 2);
+      });
+      this.backdrop.fillStyle(0x5a8581, 1); this.backdrop.fillRect(476, 93, 8, 19);
+      this.backdrop.fillStyle(0x729b93, 1); this.backdrop.fillTriangle(480, 75, 473, 95, 487, 95);
       this.ground.fillStyle(0x4d555a, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
       this.ground.fillStyle(0x374046, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, 5);
       this.groundMarks.forEach((mark, i) => {
@@ -473,7 +486,7 @@ class PikachuRun extends Phaser.Scene {
     card.fillStyle(0xfffcf3, .97); card.fillRoundedRect(282, 169, 396, 220, 24);
     card.lineStyle(2, 0xd7d8c2, 1); card.strokeRoundedRect(282, 169, 396, 220, 24);
     const title = this.add.text(WIDTH / 2, 207, '皮卡丘快跑！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '29px', color: '#414a43', fontStyle: '900' }).setOrigin(.5);
-    const copy = this.add.text(WIDTH / 2, 251, '跳過障礙，每超過 500 分就會前往新場景\n遇到敵人時按 Z 使出十萬伏特！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '13px', color: '#778175', align: 'center', lineSpacing: 5 }).setOrigin(.5);
+    const copy = this.add.text(WIDTH / 2, 251, '500、1000 分前往新場景，每 500 分速度加快\n超過 1500 分後繼續跑，倒下時挑戰成功！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '13px', color: '#778175', align: 'center', lineSpacing: 5 }).setOrigin(.5);
     const button = this.add.rectangle(WIDTH / 2, 316, 182, 48, 0xe8bb50).setInteractive({ useHandCursor: true });
     const buttonText = this.add.text(WIDTH / 2, 316, '開始奔跑', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '16px', color: '#423b2a', fontStyle: '900' }).setOrigin(.5);
     const hint = this.add.text(WIDTH / 2, 363, '空白鍵 / ↑ / 點擊開始', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '12px', color: '#9a9a85' }).setOrigin(.5);
@@ -511,7 +524,7 @@ class PikachuRun extends Phaser.Scene {
     let species = null;
     if (isEnemy) {
       species = enemy.species;
-      const yOffset = species === 'rayquaza' ? Phaser.Math.Between(105, 126) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : Phaser.Math.Between(71, 84);
+      const yOffset = species === 'rayquaza' ? Phaser.Math.Between(235, 270) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : Phaser.Math.Between(71, 84);
       image = this.add.image(WIDTH + 50, FLOOR_Y - yOffset, enemy.frames[0]).setDepth(8);
       image.setOrigin(.5, .5).setDisplaySize(enemy.size.width, enemy.size.height);
       collider = { width: enemy.size.width * .72, height: enemy.size.height * .66 };
@@ -543,10 +556,6 @@ class PikachuRun extends Phaser.Scene {
   }
 
   checkProgression() {
-    if (this.score > 1500) {
-      this.winRun();
-      return;
-    }
     const targetStage = this.score > 1000 ? 2 : this.score > 500 ? 1 : 0;
     if (targetStage <= this.stage) return;
     const activeEnemy = this.obstacles.find(obstacle => obstacle.type === 'enemy' && !obstacle.attacking);
@@ -578,7 +587,7 @@ class PikachuRun extends Phaser.Scene {
     const dt = Math.min(delta, 48) / 1000;
     this.elapsed += delta;
     this.score = Math.floor(this.elapsed / 100) + this.bonusScore;
-    this.speed = Math.min(690, 360 + this.score * 1.45);
+    this.speed = Math.min(850, 360 + Math.floor(this.score / 500) * 85);
     this.scoreText.setText(this.formatScore(this.score));
     this.checkProgression();
     if (this.mode !== 'running') return;
@@ -787,6 +796,10 @@ class PikachuRun extends Phaser.Scene {
 
   endRun(reason = 'obstacle') {
     if (this.mode === 'over' || this.mode === 'won') return;
+    if (this.score > 1500) {
+      this.winRun();
+      return;
+    }
     this.mode = 'over';
     this.touchDuck = false;
     document.getElementById('attack-button')?.classList.remove('ready');
