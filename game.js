@@ -587,7 +587,7 @@ class PikachuRun extends Phaser.Scene {
     const dt = Math.min(delta, 48) / 1000;
     this.elapsed += delta;
     this.score = Math.floor(this.elapsed / 100) + this.bonusScore;
-    this.speed = Math.min(850, 360 + Math.floor(this.score / 500) * 85);
+    this.speed = 360 + Math.floor(this.score / 500) * 85;
     this.scoreText.setText(this.formatScore(this.score));
     this.checkProgression();
     if (this.mode !== 'running') return;
