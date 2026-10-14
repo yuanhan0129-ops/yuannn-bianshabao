@@ -9,6 +9,7 @@ class PikachuRun extends Phaser.Scene {
     this.score = 0;
     this.best = 0;
     this.elapsed = 0;
+    this.bonusScore = 0;
     this.spawnIn = 0;
     this.speed = 360;
     this.feetY = FLOOR_Y;
@@ -107,8 +108,8 @@ class PikachuRun extends Phaser.Scene {
   createObstacleTextures() {
     this.drawCactusTexture('cactus-small', 30, 48, false);
     this.drawCactusTexture('cactus-tall', 42, 62, true);
-    this.drawBirdTexture('bird-a', 0);
-    this.drawBirdTexture('bird-b', 1);
+    this.drawCharizardTexture('charizard-a', 0);
+    this.drawCharizardTexture('charizard-b', 1);
   }
 
   drawCactusTexture(key, width, height, cluster) {
@@ -129,22 +130,48 @@ class PikachuRun extends Phaser.Scene {
     g.destroy();
   }
 
-  drawBirdTexture(key, wingUp) {
+  drawCharizardTexture(key, wingUp) {
     const g = this.make.graphics({ x: 0, y: 0, add: false });
-    const ink = 0x39494b;
-    g.fillStyle(0x6c7978, 1); g.lineStyle(2, ink, 1);
-    g.fillEllipse(25, 20, 31, 16); g.strokeEllipse(25, 20, 31, 16);
-    g.fillCircle(38, 17, 8); g.strokeCircle(38, 17, 8);
-    g.fillStyle(0xe6b95d, 1); g.fillTriangle(44, 16, 53, 19, 44, 21);
-    g.fillStyle(ink, 1); g.fillCircle(40, 15, 1.5);
-    g.fillStyle(0x82908d, 1); g.lineStyle(2, ink, 1);
+    const ink = 0x3e4141;
+    const orange = 0xf08c4d;
+    const wing = 0x6484ad;
+
+    // Tail and flame, behind the wings and body.
+    g.lineStyle(6, ink, 1); g.beginPath(); g.moveTo(59, 44); g.lineTo(75, 48); g.lineTo(82, 37); g.strokePath();
+    g.lineStyle(3, orange, 1); g.beginPath(); g.moveTo(59, 44); g.lineTo(75, 48); g.lineTo(82, 37); g.strokePath();
+    g.fillStyle(0xf3a43e, 1); g.lineStyle(2, ink, 1);
+    g.beginPath(); g.moveTo(78, 38); g.lineTo(83, 29); g.lineTo(85, 36); g.lineTo(91, 30); g.lineTo(89, 43); g.lineTo(82, 46); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillStyle(0xffd55d, 1); g.fillTriangle(83, 39, 87, 32, 87, 42);
+
+    // Two outline wings with blue inner membranes.
+    g.fillStyle(orange, 1); g.lineStyle(3, ink, 1);
     if (wingUp) {
-      g.fillTriangle(22, 19, 12, 1, 30, 14); g.strokeTriangle(22, 19, 12, 1, 30, 14);
+      g.beginPath(); g.moveTo(43, 34); g.lineTo(24, 4); g.lineTo(9, 6); g.lineTo(17, 38); g.lineTo(37, 49); g.closePath(); g.fillPath(); g.strokePath();
+      g.fillStyle(wing, 1); g.beginPath(); g.moveTo(38, 37); g.lineTo(24, 12); g.lineTo(18, 12); g.lineTo(23, 37); g.closePath(); g.fillPath();
     } else {
-      g.fillTriangle(22, 19, 11, 33, 31, 25); g.strokeTriangle(22, 19, 11, 33, 31, 25);
+      g.beginPath(); g.moveTo(43, 35); g.lineTo(22, 16); g.lineTo(7, 39); g.lineTo(27, 47); g.lineTo(40, 45); g.closePath(); g.fillPath(); g.strokePath();
+      g.fillStyle(wing, 1); g.beginPath(); g.moveTo(37, 38); g.lineTo(23, 23); g.lineTo(15, 38); g.lineTo(29, 43); g.closePath(); g.fillPath();
     }
-    g.lineStyle(2, ink, 1); g.lineBetween(14, 22, 4, 18); g.lineBetween(14, 24, 5, 28);
-    g.generateTexture(key, 56, 36);
+    g.fillStyle(orange, 1); g.lineStyle(3, ink, 1);
+    g.beginPath(); g.moveTo(51, 34); g.lineTo(72, 8); g.lineTo(69, 39); g.lineTo(57, 49); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillStyle(wing, 1); g.beginPath(); g.moveTo(55, 37); g.lineTo(67, 17); g.lineTo(64, 39); g.closePath(); g.fillPath();
+
+    // Body, neck and head facing the runner.
+    g.fillStyle(orange, 1); g.lineStyle(3, ink, 1);
+    g.fillEllipse(49, 48, 35, 25); g.strokeEllipse(49, 48, 35, 25);
+    g.fillRoundedRect(27, 32, 15, 24, 7); g.strokeRoundedRect(27, 32, 15, 24, 7);
+    g.fillEllipse(23, 29, 24, 20); g.strokeEllipse(23, 29, 24, 20);
+    g.fillTriangle(18, 21, 12, 14, 22, 22); g.strokeTriangle(18, 21, 12, 14, 22, 22);
+    g.fillTriangle(27, 20, 34, 14, 30, 24); g.strokeTriangle(27, 20, 34, 14, 30, 24);
+    g.fillStyle(0xffddad, 1); g.fillEllipse(18, 34, 13, 6);
+    g.fillStyle(ink, 1); g.fillCircle(17, 27, 2); g.fillCircle(9, 33, 1.5);
+    g.fillStyle(0xffffff, 1); g.fillCircle(17.5, 26.5, .7);
+    g.fillStyle(0xe97850, 1); g.fillEllipse(42, 58, 10, 7); g.fillEllipse(58, 58, 10, 7);
+    g.fillStyle(orange, 1); g.lineStyle(3, ink, 1);
+    g.fillRoundedRect(35, 55, 9, 13, 4); g.strokeRoundedRect(35, 55, 9, 13, 4);
+    g.fillRoundedRect(54, 55, 9, 13, 4); g.strokeRoundedRect(54, 55, 9, 13, 4);
+    g.fillStyle(0xffd39a, 1); g.fillEllipse(47, 47, 15, 10);
+    g.generateTexture(key, 94, 72);
     g.destroy();
   }
 
@@ -191,6 +218,10 @@ class PikachuRun extends Phaser.Scene {
     this.add.text(795, 34, 'BEST', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '11px', color: '#879080', fontStyle: '900', letterSpacing: 2 }).setDepth(19);
     this.bestText = this.add.text(795, 49, this.formatScore(this.best), { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '21px', color: '#5b7d69', fontStyle: '900' }).setDepth(19);
     this.add.text(480, 51, '跑得越遠，分數越高', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '14px', color: '#748174', fontStyle: 'bold' }).setOrigin(.5).setDepth(19);
+    this.noticeText = this.add.text(WIDTH / 2, 111, '', {
+      fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '17px', color: '#634b24', fontStyle: '900',
+      backgroundColor: '#fff6cc', padding: { left: 16, right: 16, top: 9, bottom: 9 },
+    }).setOrigin(.5).setDepth(20).setAlpha(0);
   }
 
   createPlayer() {
@@ -206,6 +237,7 @@ class PikachuRun extends Phaser.Scene {
       this.input.keyboard.on('keydown-SPACE', () => this.handleAction());
       this.input.keyboard.on('keydown-UP', () => this.handleAction());
       this.input.keyboard.on('keydown-ENTER', () => this.handleAction());
+      this.input.keyboard.on('keydown-Z', () => this.attackCharizard());
       this.input.keyboard.on('keydown-R', () => { if (this.mode === 'over') this.scene.restart(); });
     }
 
@@ -238,7 +270,7 @@ class PikachuRun extends Phaser.Scene {
     card.fillStyle(0xfffcf3, .97); card.fillRoundedRect(282, 169, 396, 220, 24);
     card.lineStyle(2, 0xd7d8c2, 1); card.strokeRoundedRect(282, 169, 396, 220, 24);
     const title = this.add.text(WIDTH / 2, 207, '皮卡丘快跑！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '29px', color: '#414a43', fontStyle: '900' }).setOrigin(.5);
-    const copy = this.add.text(WIDTH / 2, 251, '跳過仙人掌，躲開飛鳥，跑出你的最高分。', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '14px', color: '#778175' }).setOrigin(.5);
+    const copy = this.add.text(WIDTH / 2, 251, '跳過仙人掌；遇到噴火龍，按 Z 放出十萬伏特！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '13px', color: '#778175', align: 'center' }).setOrigin(.5);
     const button = this.add.rectangle(WIDTH / 2, 316, 182, 48, 0xe8bb50).setInteractive({ useHandCursor: true });
     const buttonText = this.add.text(WIDTH / 2, 316, '開始奔跑', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '16px', color: '#423b2a', fontStyle: '900' }).setOrigin(.5);
     const hint = this.add.text(WIDTH / 2, 363, '空白鍵 / ↑ / 點擊開始', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '12px', color: '#9a9a85' }).setOrigin(.5);
@@ -266,18 +298,18 @@ class PikachuRun extends Phaser.Scene {
   }
 
   spawnObstacle() {
-    const canSpawnBird = this.score > 90;
-    const isBird = canSpawnBird && Math.random() < .24;
+    const canSpawnCharizard = this.score > 90;
+    const isCharizard = canSpawnCharizard && Math.random() < .24;
     let image;
     let collider;
     let y;
     let type;
-    if (isBird) {
-      image = this.add.image(WIDTH + 50, FLOOR_Y - Phaser.Math.Between(60, 86), 'bird-a').setDepth(8);
-      image.setOrigin(.5, .5).setDisplaySize(56, 36);
-      collider = { width: 40, height: 18 };
+    if (isCharizard) {
+      image = this.add.image(WIDTH + 50, FLOOR_Y - Phaser.Math.Between(71, 84), 'charizard-a').setDepth(8);
+      image.setOrigin(.5, .5).setDisplaySize(104, 80);
+      collider = { width: 74, height: 50 };
       y = image.y;
-      type = 'bird';
+      type = 'charizard';
     } else {
       const tall = Math.random() < .45;
       const key = tall ? 'cactus-tall' : 'cactus-small';
@@ -288,14 +320,14 @@ class PikachuRun extends Phaser.Scene {
       y = FLOOR_Y;
       type = 'cactus';
     }
-    this.obstacles.push({ image, collider, type, y, x: WIDTH + 50, wingTimer: 0, wing: 0 });
+    this.obstacles.push({ image, collider, type, y, x: WIDTH + 50, wingTimer: 0, wing: 0, alerted: false, defeated: false, attacking: false });
   }
 
   update(time, delta) {
     if (this.mode !== 'running') return;
     const dt = Math.min(delta, 48) / 1000;
     this.elapsed += delta;
-    this.score = Math.floor(this.elapsed / 100);
+    this.score = Math.floor(this.elapsed / 100) + this.bonusScore;
     this.speed = Math.min(690, 360 + this.score * 1.45);
     this.scoreText.setText(this.formatScore(this.score));
 
@@ -333,21 +365,31 @@ class PikachuRun extends Phaser.Scene {
 
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
       const obstacle = this.obstacles[i];
+      if (obstacle.defeated || obstacle.attacking) continue;
       obstacle.x -= this.speed * dt;
       obstacle.image.x = obstacle.x;
-      if (obstacle.type === 'bird') {
+      if (obstacle.type === 'charizard') {
         obstacle.wingTimer += delta;
         if (obstacle.wingTimer > 130) {
           obstacle.wingTimer = 0;
           obstacle.wing = 1 - obstacle.wing;
-          obstacle.image.setTexture(obstacle.wing ? 'bird-b' : 'bird-a');
+          obstacle.image.setTexture(obstacle.wing ? 'charizard-b' : 'charizard-a');
+        }
+        if (!obstacle.alerted && obstacle.x <= 700) {
+          obstacle.alerted = true;
+          this.showNotice('噴火龍來襲！按 Z 使出十萬伏特！', 1400);
+          document.getElementById('attack-button')?.classList.add('ready');
+        }
+        if (obstacle.x <= this.player.x + 86) {
+          this.charizardFire(obstacle);
+          return;
         }
       }
       if (obstacle.x < -80) {
         obstacle.image.destroy();
         this.obstacles.splice(i, 1);
-      } else if (this.collidesWith(obstacle)) {
-        this.endRun();
+      } else if (obstacle.type === 'cactus' && this.collidesWith(obstacle)) {
+        this.endRun('obstacle');
         return;
       }
     }
@@ -383,8 +425,105 @@ class PikachuRun extends Phaser.Scene {
     return playerRect.left < obsRect.right && playerRect.right > obsRect.left && playerRect.top < obsRect.bottom && playerRect.bottom > obsRect.top;
   }
 
-  endRun() {
+  showNotice(message, duration = 950) {
+    if (!this.noticeText || this.mode === 'over') return;
+    this.noticeSerial = (this.noticeSerial || 0) + 1;
+    const serial = this.noticeSerial;
+    this.noticeTimer?.remove(false);
+    this.tweens.killTweensOf(this.noticeText);
+    this.noticeText.setText(message).setAlpha(1).setScale(.94);
+    this.tweens.add({ targets: this.noticeText, scale: 1, duration: 130, ease: 'Back.easeOut' });
+    this.noticeTimer = this.time.delayedCall(duration, () => {
+      if (serial === this.noticeSerial && this.mode === 'running') this.tweens.add({ targets: this.noticeText, alpha: 0, duration: 180 });
+    });
+  }
+
+  attackCharizard() {
+    if (this.mode !== 'running') return;
+    const target = this.obstacles.find(obstacle => obstacle.type === 'charizard' && !obstacle.defeated && !obstacle.attacking);
+    if (!target) {
+      this.showNotice('還沒看到噴火龍，先專心跳過仙人掌！', 1050);
+      return;
+    }
+    if (target.x > 700) {
+      this.showNotice('噴火龍還太遠，等牠靠近再按 Z。', 1050);
+      return;
+    }
+    if (target.x <= this.player.x + 86) {
+      this.charizardFire(target);
+      return;
+    }
+
+    target.defeated = true;
+    this.bonusScore += 50;
+    this.score += 50;
+    this.scoreText.setText(this.formatScore(this.score));
+    document.getElementById('attack-button')?.classList.remove('ready');
+    this.showNotice('十萬伏特！噴火龍被擊倒了！ +50', 1200);
+    this.createElectricEffect(target);
+    this.tweens.add({
+      targets: target.image,
+      x: target.x + 105,
+      y: target.y + 95,
+      angle: 100,
+      alpha: 0,
+      duration: 520,
+      ease: 'Cubic.easeIn',
+      onComplete: () => {
+        target.image.destroy();
+        this.obstacles = this.obstacles.filter(obstacle => obstacle !== target);
+      },
+    });
+  }
+
+  createElectricEffect(target) {
+    const startX = this.player.x + 25;
+    const startY = this.player.y - (this.isDucking ? 39 : 55);
+    const endX = target.x - 40;
+    const endY = target.y - 2;
+    const points = [{ x: startX, y: startY }];
+    for (let i = 1; i < 7; i++) {
+      const t = i / 7;
+      points.push({ x: startX + (endX - startX) * t, y: startY + (endY - startY) * t + Phaser.Math.Between(-22, 22) });
+    }
+    points.push({ x: endX, y: endY });
+    const bolt = this.add.graphics().setDepth(24);
+    const draw = (width, color, alpha) => {
+      bolt.lineStyle(width, color, alpha);
+      bolt.beginPath(); bolt.moveTo(points[0].x, points[0].y);
+      points.slice(1).forEach(point => bolt.lineTo(point.x, point.y));
+      bolt.strokePath();
+    };
+    draw(15, 0x71c7ff, .6);
+    draw(8, 0xffdc42, 1);
+    draw(3, 0xffffff, 1);
+    this.cameras.main.flash(120, 255, 244, 145);
+    for (let i = 0; i < 9; i++) {
+      const spark = this.add.circle(target.x + Phaser.Math.Between(-27, 27), target.y + Phaser.Math.Between(-20, 20), Phaser.Math.Between(3, 6), i % 2 ? 0xffe45c : 0x8bdcff).setDepth(25);
+      this.tweens.add({ targets: spark, x: spark.x + Phaser.Math.Between(-36, 36), y: spark.y + Phaser.Math.Between(-35, 35), alpha: 0, scale: .15, duration: 420, onComplete: () => spark.destroy() });
+    }
+    this.tweens.add({ targets: bolt, alpha: 0, duration: 260, onComplete: () => bolt.destroy() });
+  }
+
+  charizardFire(target) {
+    if (this.mode !== 'running' || target.attacking || target.defeated) return;
+    target.attacking = true;
+    this.mode = 'danger';
+    document.getElementById('attack-button')?.classList.remove('ready');
+    this.showNotice('來不及了！噴火龍噴火！', 600);
+    this.cameras.main.shake(240, .006);
+    for (let i = 0; i < 12; i++) {
+      const flame = this.add.triangle(target.x - 43, target.y + Phaser.Math.Between(-12, 15), 0, 10, 25, 0, 0, -10, i % 2 ? 0xf05438 : 0xffae32, .98).setDepth(26);
+      this.tweens.add({ targets: flame, x: this.player.x + Phaser.Math.Between(-6, 28), y: flame.y + Phaser.Math.Between(-22, 22), scaleX: 1.6, scaleY: 1.5, alpha: 0, duration: Phaser.Math.Between(280, 510), onComplete: () => flame.destroy() });
+    }
+    this.time.delayedCall(520, () => this.endRun('fire'));
+  }
+
+  endRun(reason = 'obstacle') {
+    if (this.mode === 'over') return;
     this.mode = 'over';
+    this.touchDuck = false;
+    document.getElementById('attack-button')?.classList.remove('ready');
     if (this.score > this.best) {
       this.best = this.score;
       this.bestText.setText(this.formatScore(this.best));
@@ -394,11 +533,12 @@ class PikachuRun extends Phaser.Scene {
     const panel = this.add.graphics().setDepth(29);
     panel.fillStyle(0xfffcf3, .98); panel.fillRoundedRect(320, 171, 320, 215, 22);
     panel.lineStyle(2, 0xd7d8c2, 1); panel.strokeRoundedRect(320, 171, 320, 215, 22);
-    const title = this.add.text(WIDTH / 2, 210, '哎呀，撞到了！', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '25px', color: '#414a43', fontStyle: '900' }).setOrigin(.5).setDepth(30);
+    const titleText = reason === 'fire' ? '被噴火龍的火焰擊中！' : '哎呀，撞到了！';
+    const title = this.add.text(WIDTH / 2, 210, titleText, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: reason === 'fire' ? '21px' : '25px', color: '#414a43', fontStyle: '900' }).setOrigin(.5).setDepth(30);
     const score = this.add.text(WIDTH / 2, 252, `本次分數　${this.formatScore(this.score)}`, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '16px', color: '#657465', fontStyle: 'bold' }).setOrigin(.5).setDepth(30);
     const best = this.add.text(WIDTH / 2, 280, `最高紀錄　${this.formatScore(this.best)}`, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '14px', color: '#81907b' }).setOrigin(.5).setDepth(30);
     const button = this.add.rectangle(WIDTH / 2, 333, 170, 45, 0xe8bb50).setInteractive({ useHandCursor: true }).setDepth(30);
-    const buttonText = this.add.text(WIDTH / 2, 333, '再跑一次', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '15px', color: '#423b2a', fontStyle: '900' }).setOrigin(.5).setDepth(31);
+    const buttonText = this.add.text(WIDTH / 2, 333, '再玩一次', { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '15px', color: '#423b2a', fontStyle: '900' }).setOrigin(.5).setDepth(31);
     button.on('pointerover', () => button.setFillStyle(0xf0c95f));
     button.on('pointerout', () => button.setFillStyle(0xe8bb50));
     button.on('pointerdown', () => this.scene.restart());
@@ -410,7 +550,7 @@ class PikachuRun extends Phaser.Scene {
   }
 }
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game-root',
   width: WIDTH,
@@ -426,4 +566,8 @@ new Phaser.Game({
   },
   input: { activePointers: 3 },
   scene: [PikachuRun],
+});
+
+document.getElementById('attack-button')?.addEventListener('click', () => {
+  game.scene.getScene('PikachuRun')?.attackCharizard();
 });

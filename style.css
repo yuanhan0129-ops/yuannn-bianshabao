@@ -44,6 +44,13 @@ h1 { margin: 0; color: #344341; font-size: clamp(25px, 4vw, 34px); font-weight: 
 .control-hint { display: flex; align-items: center; gap: 5px; }
 .keycap { display: inline-grid; min-width: 23px; height: 23px; place-items: center; padding: 0 5px; border: 1px solid #dce1d8; border-bottom-width: 2px; border-radius: 6px; background: #fbfcf8; color: #52675e; font-size: 11px; font-weight: 800; }
 .keycap.wide { min-width: 55px; }
+.attack-button { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid #d8b84e; border-radius: 999px; background: #fff2b8; color: #665221; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; transition: background .15s ease, transform .15s ease, box-shadow .15s ease; }
+.attack-button:hover { background: #ffe888; transform: translateY(-1px); }
+.attack-button:active { transform: translateY(1px); }
+.attack-button:focus-visible { outline: 3px solid rgba(86, 144, 189, .6); outline-offset: 2px; }
+.attack-button kbd { display: inline-grid; min-width: 20px; height: 20px; place-items: center; border-radius: 6px; background: rgba(255, 255, 255, .76); color: #725e2f; font: 800 11px 'Nunito', sans-serif; }
+.attack-button.ready { animation: electric-pulse .55s ease-in-out infinite alternate; }
+@keyframes electric-pulse { from { box-shadow: 0 0 0 0 rgba(238, 189, 49, .18); } to { box-shadow: 0 0 0 6px rgba(238, 189, 49, .32); background: #ffe16c; } }
 .tap-icon { color: #dfa949; font-size: 14px; }
 .gentle-reminder { margin: 16px 4px 0; color: #889084; text-align: center; font-size: 12px; letter-spacing: .02em; }
 
