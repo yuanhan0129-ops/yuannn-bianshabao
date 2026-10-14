@@ -509,7 +509,7 @@ class PikachuRun extends Phaser.Scene {
   spawnObstacle() {
     const enemy = this.enemyForStage(this.stage);
     const canSpawnEnemy = this.score - this.stageStartScore > 90;
-    const isEnemy = canSpawnEnemy && Math.random() < .24;
+    const isEnemy = canSpawnEnemy && Math.random() < .30;
     let image;
     let collider;
     let y;
@@ -611,7 +611,7 @@ class PikachuRun extends Phaser.Scene {
     if (this.spawnIn <= 0 && !this.pendingStage) {
       this.spawnObstacle();
       const difficulty = Math.min(340, this.score * 1.3);
-      this.spawnIn = Phaser.Math.Between(1120 - difficulty, 1580 - difficulty);
+      this.spawnIn = Math.floor(Phaser.Math.Between(1120 - difficulty, 1580 - difficulty) * .9);
     }
 
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
@@ -627,7 +627,7 @@ class PikachuRun extends Phaser.Scene {
           obstacle.wing = 1 - obstacle.wing;
           obstacle.image.setTexture(obstacle.wing ? enemy.frames[1] : enemy.frames[0]);
         }
-        if (!obstacle.alerted && obstacle.x <= 700) {
+        if (!obstacle.alerted && obstacle.x <= 620) {
           obstacle.alerted = true;
           this.showNotice(`${enemy.label}來襲！按 Z 使出十萬伏特！`, 1400);
           document.getElementById('attack-button')?.classList.add('ready');
@@ -698,7 +698,7 @@ class PikachuRun extends Phaser.Scene {
       return;
     }
     const enemy = this.enemyForStage(this.stage);
-    if (target.x > 700) {
+    if (target.x > 620) {
       this.showNotice(`${enemy.label}還太遠，等牠靠近再按 Z。`, 1050);
       return;
     }
