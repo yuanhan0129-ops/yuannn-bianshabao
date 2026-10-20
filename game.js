@@ -132,6 +132,32 @@ class PikachuRun extends Phaser.Scene {
     this.drawSquirtleTexture('squirtle-b', 1);
     this.drawRayquazaTexture('rayquaza-a', 0);
     this.drawRayquazaTexture('rayquaza-b', 1);
+    this.drawPokeballTexture('pokeball');
+  }
+
+  drawPokeballTexture(key) {
+    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const centerX = 24;
+    const centerY = 24;
+    const radius = 21;
+    const ink = 0x343a3b;
+
+    g.fillStyle(0xf15d58, 1);
+    g.fillCircle(centerX, centerY, radius);
+    g.fillStyle(0xfffcf3, 1);
+    g.fillRect(centerX - radius, centerY, radius * 2, radius);
+    g.lineStyle(4, ink, 1);
+    g.lineBetween(centerX - radius, centerY, centerX + radius, centerY);
+    g.strokeCircle(centerX, centerY, radius);
+    g.fillStyle(0xfffcf3, 1);
+    g.lineStyle(4, ink, 1);
+    g.fillCircle(centerX, centerY, 8);
+    g.strokeCircle(centerX, centerY, 8);
+    g.fillStyle(0xfffcf3, 1);
+    g.fillCircle(centerX, centerY, 3.5);
+
+    g.generateTexture(key, 48, 48);
+    g.destroy();
   }
 
   drawCactusTexture(key, width, height, cluster) {
@@ -527,6 +553,7 @@ class PikachuRun extends Phaser.Scene {
     let y;
     let type;
     let species = null;
+    const isPokeball = !isEnemy && Math.random() < .16;
     if (isEnemy) {
       species = enemy.species;
       const yOffset = species === 'rayquaza' ? Phaser.Math.Between(235, 270) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : Phaser.Math.Between(71, 84);
@@ -535,6 +562,12 @@ class PikachuRun extends Phaser.Scene {
       collider = { width: enemy.size.width * .72, height: enemy.size.height * .66 };
       y = image.y;
       type = 'enemy';
+    } else if (isPokeball) {
+      const size = 46;
+      image = this.add.image(WIDTH + 50, FLOOR_Y, 'pokeball').setDepth(8).setOrigin(.5, 1).setDisplaySize(size, size);
+      collider = { width: size * .82, height: size * .9 };
+      y = FLOOR_Y;
+      type = 'pokeball';
     } else {
       const tall = Math.random() < .45;
       const choices = this.stage === 0
@@ -652,8 +685,8 @@ class PikachuRun extends Phaser.Scene {
       if (obstacle.x < -80) {
         obstacle.image.destroy();
         this.obstacles.splice(i, 1);
-      } else if (obstacle.type === 'hazard' && this.collidesWith(obstacle)) {
-        this.endRun('obstacle');
+      } else if ((obstacle.type === 'hazard' || obstacle.type === 'pokeball') && this.collidesWith(obstacle)) {
+        this.endRun(obstacle.type === 'pokeball' ? 'pokeball' : 'obstacle');
         return;
       }
     }
@@ -682,7 +715,7 @@ class PikachuRun extends Phaser.Scene {
       top: obstacle.y - obstacle.collider.height / 2,
       bottom: obstacle.y + obstacle.collider.height / 2,
     };
-    if (obstacle.type === 'hazard') {
+    if (obstacle.type === 'hazard' || obstacle.type === 'pokeball') {
       obsRect.top = FLOOR_Y - obstacle.collider.height;
       obsRect.bottom = FLOOR_Y - 2;
     }
@@ -818,9 +851,10 @@ class PikachuRun extends Phaser.Scene {
       charizard: '被噴火龍的火焰擊中！',
       squirtle: '被傑尼龜的水槍擊中！',
       rayquaza: '被烈空坐的龍之波動擊中！',
+      pokeball: '糟了！皮卡丘被寶貝球收服了！',
     };
     const titleText = failures[reason] || '哎呀，撞到了！';
-    const title = this.add.text(WIDTH / 2, 210, titleText, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: failures[reason] ? '19px' : '25px', color: '#414a43', fontStyle: '900' }).setOrigin(.5).setDepth(30);
+    const title = this.add.text(WIDTH / 2, 210, titleText, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: reason === 'pokeball' ? '18px' : failures[reason] ? '19px' : '25px', color: '#414a43', fontStyle: '900' }).setOrigin(.5).setDepth(30);
     const score = this.add.text(WIDTH / 2, 252, `本次分數　${this.formatScore(this.score)}`, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '16px', color: '#657465', fontStyle: 'bold' }).setOrigin(.5).setDepth(30);
     const best = this.add.text(WIDTH / 2, 280, `最高紀錄　${this.formatScore(this.best)}`, { fontFamily: 'Nunito, Noto Sans TC, sans-serif', fontSize: '14px', color: '#81907b' }).setOrigin(.5).setDepth(30);
     const button = this.add.rectangle(WIDTH / 2, 333, 170, 45, 0xe8bb50).setInteractive({ useHandCursor: true }).setDepth(30);
