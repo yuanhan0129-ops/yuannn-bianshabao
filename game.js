@@ -16,6 +16,8 @@ class PikachuRun extends Phaser.Scene {
     this.stage = 0;
     this.stageStartScore = 0;
     this.pendingStage = null;
+    this.pendingMilestone = null;
+    this.progressionMilestone = 0;
     this.spawnIn = 0;
     this.speed = 360;
     this.feetY = FLOOR_Y;
@@ -29,6 +31,11 @@ class PikachuRun extends Phaser.Scene {
     this.clouds = [];
     this.noticeSerial = 0;
     this.overlay = null;
+    this.weather = 'clear';
+    this.weatherClock = 0;
+    this.weatherLandmark = null;
+    this.weatherTint = null;
+    this.weatherFx = null;
   }
 
   create() {
@@ -38,6 +45,7 @@ class PikachuRun extends Phaser.Scene {
     this.createCharacterTextures();
     this.createObstacleTextures();
     this.createWorld();
+    this.setWeather(this.pickWeather(this.stage));
     this.createHud();
     this.createPlayer();
     this.createControls();
@@ -119,7 +127,7 @@ class PikachuRun extends Phaser.Scene {
   }
 
   createObstacleTextures() {
-    if (this.textures.exists('cactus-small')) return;
+    if (this.textures.exists('cactus-small') && this.textures.exists('pidgey-a') && this.textures.exists('groudon-weather')) return;
     this.drawCactusTexture('cactus-small', 30, 48, false);
     this.drawCactusTexture('cactus-tall', 42, 62, true);
     this.drawBeachObstacle('beach-shell', 40, 34);
@@ -133,6 +141,12 @@ class PikachuRun extends Phaser.Scene {
     this.drawRayquazaTexture('rayquaza-a', 0);
     this.drawRayquazaTexture('rayquaza-b', 1);
     this.drawPokeballTexture('pokeball');
+    this.drawPidgeyTexture('pidgey-a', 0);
+    this.drawPidgeyTexture('pidgey-b', 1);
+    this.drawTaillowTexture('taillow-a', 0);
+    this.drawTaillowTexture('taillow-b', 1);
+    this.drawGroudonTexture('groudon-weather');
+    this.drawKyogreTexture('kyogre-weather');
   }
 
   drawPokeballTexture(key) {
@@ -157,6 +171,111 @@ class PikachuRun extends Phaser.Scene {
     g.fillCircle(centerX, centerY, 3.5);
 
     g.generateTexture(key, 48, 48);
+    g.destroy();
+  }
+
+  drawPidgeyTexture(key, flap) {
+    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const ink = 0x49413b;
+    const brown = 0xb97948;
+    const cream = 0xf1dfb2;
+    const wingY = flap ? 8 : 21;
+
+    g.fillStyle(brown, 1); g.lineStyle(2.5, ink, 1);
+    g.fillTriangle(43, 24, 67, 15, 57, 30); g.strokeTriangle(43, 24, 67, 15, 57, 30);
+    g.fillTriangle(53, 28, 68, 37, 50, 34); g.strokeTriangle(53, 28, 68, 37, 50, 34);
+    g.fillEllipse(37, 28, 37, 21); g.strokeEllipse(37, 28, 37, 21);
+    g.fillStyle(cream, 1); g.fillEllipse(38, 32, 23, 10);
+    g.fillStyle(brown, 1);
+    g.beginPath(); g.moveTo(34, 25); g.lineTo(22, wingY); g.lineTo(48, 18); g.lineTo(54, 28); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillEllipse(20, 19, 22, 19); g.strokeEllipse(20, 19, 22, 19);
+    g.fillTriangle(18, 10, 13, 1, 23, 9); g.strokeTriangle(18, 10, 13, 1, 23, 9);
+    g.fillTriangle(25, 11, 30, 3, 29, 14); g.strokeTriangle(25, 11, 30, 3, 29, 14);
+    g.fillStyle(0xe9b64f, 1); g.lineStyle(2, ink, 1);
+    g.fillTriangle(11, 20, 1, 24, 12, 26); g.strokeTriangle(11, 20, 1, 24, 12, 26);
+    g.fillStyle(ink, 1); g.fillCircle(19, 17, 2);
+    g.lineStyle(2.5, ink, 1); g.lineBetween(32, 37, 30, 43); g.lineBetween(42, 37, 44, 43);
+    g.lineBetween(27, 43, 34, 43); g.lineBetween(42, 43, 49, 43);
+
+    g.generateTexture(key, 70, 48);
+    g.destroy();
+  }
+
+  drawTaillowTexture(key, flap) {
+    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const ink = 0x35414b;
+    const blue = 0x627d9b;
+    const wingY = flap ? 5 : 21;
+
+    g.fillStyle(blue, 1); g.lineStyle(2.5, ink, 1);
+    g.fillTriangle(45, 25, 69, 13, 58, 28); g.strokeTriangle(45, 25, 69, 13, 58, 28);
+    g.fillTriangle(55, 28, 71, 39, 52, 34); g.strokeTriangle(55, 28, 71, 39, 52, 34);
+    g.fillEllipse(38, 28, 37, 21); g.strokeEllipse(38, 28, 37, 21);
+    g.fillStyle(0xd95b54, 1); g.fillEllipse(40, 33, 20, 10);
+    g.fillStyle(blue, 1);
+    g.beginPath(); g.moveTo(33, 25); g.lineTo(22, wingY); g.lineTo(49, 18); g.lineTo(55, 28); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillEllipse(20, 19, 22, 19); g.strokeEllipse(20, 19, 22, 19);
+    g.fillTriangle(17, 11, 12, 1, 22, 10); g.strokeTriangle(17, 11, 12, 1, 22, 10);
+    g.fillTriangle(24, 11, 30, 3, 28, 14); g.strokeTriangle(24, 11, 30, 3, 28, 14);
+    g.fillStyle(0xf3eee1, 1); g.fillEllipse(17, 21, 10, 7);
+    g.fillStyle(0xe9b64f, 1); g.lineStyle(2, ink, 1);
+    g.fillTriangle(11, 20, 1, 24, 12, 26); g.strokeTriangle(11, 20, 1, 24, 12, 26);
+    g.fillStyle(ink, 1); g.fillCircle(19, 17, 2);
+    g.lineStyle(2.5, ink, 1); g.lineBetween(34, 37, 32, 43); g.lineBetween(43, 37, 45, 43);
+    g.lineBetween(29, 43, 36, 43); g.lineBetween(43, 43, 50, 43);
+
+    g.generateTexture(key, 74, 48);
+    g.destroy();
+  }
+
+  drawGroudonTexture(key) {
+    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const ink = 0x633d3a;
+    const red = 0xc95a4e;
+    const light = 0xf0b19a;
+
+    g.fillStyle(red, 1); g.lineStyle(4, ink, 1);
+    g.fillTriangle(46, 61, 8, 34, 47, 47); g.strokeTriangle(46, 61, 8, 34, 47, 47);
+    g.fillTriangle(49, 58, 16, 80, 49, 70); g.strokeTriangle(49, 58, 16, 80, 49, 70);
+    g.fillRoundedRect(43, 38, 90, 45, 17); g.strokeRoundedRect(43, 38, 90, 45, 17);
+    g.fillEllipse(136, 47, 47, 39); g.strokeEllipse(136, 47, 47, 39);
+    g.fillTriangle(128, 30, 113, 8, 143, 29); g.strokeTriangle(128, 30, 113, 8, 143, 29);
+    g.fillTriangle(147, 30, 162, 7, 154, 36); g.strokeTriangle(147, 30, 162, 7, 154, 36);
+    g.fillRoundedRect(57, 68, 20, 36, 7); g.strokeRoundedRect(57, 68, 20, 36, 7);
+    g.fillRoundedRect(112, 66, 20, 38, 7); g.strokeRoundedRect(112, 66, 20, 38, 7);
+    g.fillTriangle(48, 43, 28, 31, 53, 51); g.strokeTriangle(48, 43, 28, 31, 53, 51);
+    g.fillTriangle(105, 44, 124, 30, 119, 54); g.strokeTriangle(105, 44, 124, 30, 119, 54);
+    g.fillStyle(light, 1);
+    g.lineStyle(5, light, 1); g.lineBetween(54, 48, 69, 55); g.lineBetween(82, 42, 96, 49); g.lineBetween(104, 41, 116, 47);
+    g.lineStyle(3, ink, 1); g.lineBetween(138, 48, 145, 49); g.fillStyle(0xfff0b8, 1); g.fillCircle(140, 45, 2.5);
+
+    g.generateTexture(key, 180, 110);
+    g.destroy();
+  }
+
+  drawKyogreTexture(key) {
+    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const ink = 0x234b70;
+    const blue = 0x3d8fbe;
+    const light = 0x8ed3e6;
+
+    g.fillStyle(blue, 1); g.lineStyle(4, ink, 1);
+    g.fillEllipse(105, 59, 130, 65); g.strokeEllipse(105, 59, 130, 65);
+    g.fillTriangle(51, 56, 7, 30, 31, 70); g.strokeTriangle(51, 56, 7, 30, 31, 70);
+    g.fillTriangle(51, 63, 9, 93, 32, 68); g.strokeTriangle(51, 63, 9, 93, 32, 68);
+    g.fillTriangle(86, 44, 21, 7, 61, 57); g.strokeTriangle(86, 44, 21, 7, 61, 57);
+    g.fillTriangle(86, 72, 19, 111, 62, 63); g.strokeTriangle(86, 72, 19, 111, 62, 63);
+    g.fillTriangle(153, 44, 196, 11, 176, 60); g.strokeTriangle(153, 44, 196, 11, 176, 60);
+    g.fillTriangle(154, 73, 195, 108, 174, 61); g.strokeTriangle(154, 73, 195, 108, 174, 61);
+    g.fillTriangle(161, 47, 206, 37, 178, 59); g.strokeTriangle(161, 47, 206, 37, 178, 59);
+    g.fillTriangle(161, 70, 206, 82, 177, 61); g.strokeTriangle(161, 70, 206, 82, 177, 61);
+    g.fillStyle(light, 1); g.lineStyle(5, light, 1);
+    g.lineBetween(72, 55, 130, 53); g.lineBetween(78, 67, 132, 66);
+    g.lineBetween(48, 39, 68, 47); g.lineBetween(48, 80, 68, 70);
+    g.fillStyle(0xffe4b1, 1); g.fillCircle(156, 53, 3);
+    g.lineStyle(3, ink, 1); g.lineBetween(160, 62, 178, 63);
+
+    g.generateTexture(key, 214, 120);
     g.destroy();
   }
 
@@ -446,6 +565,70 @@ class PikachuRun extends Phaser.Scene {
     }
   }
 
+  pickWeather(stage) {
+    if (stage === 2) return 'clear';
+    return ['sunny', 'rain', 'clear'][Phaser.Math.Between(0, 2)];
+  }
+
+  setWeather(weather) {
+    this.weatherLandmark?.destroy();
+    this.weatherTint?.destroy();
+    this.weatherFx?.destroy();
+    this.weatherLandmark = null;
+    this.weatherTint = null;
+    this.weatherFx = null;
+    this.weatherClock = 0;
+    this.weather = this.stage === 2 ? 'clear' : weather;
+
+    if (this.weather === 'clear') return;
+
+    const sunny = this.weather === 'sunny';
+    const texture = sunny ? 'groudon-weather' : 'kyogre-weather';
+    const x = this.stage === 1 ? 765 : 790;
+    const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 225 : 207);
+    const size = sunny ? { width: 275, height: 168 } : { width: 315, height: 177 };
+    this.weatherLandmark = this.add.image(x, y, texture)
+      .setDisplaySize(size.width, size.height)
+      .setAlpha(sunny ? .58 : .64)
+      .setDepth(-7);
+
+    this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x5489b6, sunny ? .075 : .095)
+      .setDepth(-5);
+    this.weatherFx = this.add.graphics().setDepth(sunny ? 3 : 12);
+  }
+
+  updateWeatherEffects(delta) {
+    if (!this.weatherFx) return;
+    this.weatherClock += delta;
+    this.weatherFx.clear();
+
+    if (this.weather === 'sunny') {
+      const centerX = 814;
+      const centerY = 136;
+      this.weatherFx.lineStyle(2, 0xfff0b3, .28);
+      for (let i = 0; i < 9; i++) {
+        const angle = i * Math.PI / 4.5 + this.weatherClock * .000025;
+        const inner = 49;
+        const outer = 67 + Math.sin(this.weatherClock * .002 + i) * 5;
+        this.weatherFx.lineBetween(
+          centerX + Math.cos(angle) * inner,
+          centerY + Math.sin(angle) * inner,
+          centerX + Math.cos(angle) * outer,
+          centerY + Math.sin(angle) * outer,
+        );
+      }
+      return;
+    }
+
+    this.weatherFx.lineStyle(1.5, 0xa9ddf0, .38);
+    const drift = this.weatherClock * .72;
+    for (let i = 0; i < 72; i++) {
+      const x = (i * 173 + drift) % (WIDTH + 30) - 15;
+      const y = (i * 107 + drift * 1.6) % (HEIGHT + 35) - 18;
+      this.weatherFx.lineBetween(x, y, x - 8, y + 19);
+    }
+  }
+
   makeCloud(x, y, scale) {
     const cloud = this.add.container(x, y).setDepth(-6).setScale(scale);
     cloud.add([
@@ -553,7 +736,9 @@ class PikachuRun extends Phaser.Scene {
     let y;
     let type;
     let species = null;
-    const isPokeball = !isEnemy && Math.random() < .16;
+    const hazardRoll = Math.random();
+    const isPokeball = !isEnemy && hazardRoll < .16;
+    const isBird = !isEnemy && hazardRoll >= .16 && hazardRoll < .40;
     if (isEnemy) {
       species = enemy.species;
       const yOffset = species === 'rayquaza' ? Phaser.Math.Between(235, 270) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : Phaser.Math.Between(71, 84);
@@ -568,6 +753,15 @@ class PikachuRun extends Phaser.Scene {
       collider = { width: size * .82, height: size * .9 };
       y = FLOOR_Y;
       type = 'pokeball';
+    } else if (isBird) {
+      const bird = Math.random() < .5
+        ? { species: 'pidgey', width: 70, height: 48 }
+        : { species: 'taillow', width: 74, height: 48 };
+      species = bird.species;
+      y = FLOOR_Y - 64;
+      image = this.add.image(WIDTH + 50, y, `${species}-a`).setDepth(8).setDisplaySize(bird.width, bird.height);
+      collider = { width: bird.width * .76, height: 22 };
+      type = 'bird';
     } else {
       const tall = Math.random() < .45;
       const choices = this.stage === 0
@@ -594,26 +788,34 @@ class PikachuRun extends Phaser.Scene {
   }
 
   checkProgression() {
-    const targetStage = this.score > 1000 ? 2 : this.score > 500 ? 1 : 0;
-    if (targetStage <= this.stage) return;
-    const activeEnemy = this.obstacles.find(obstacle => obstacle.type === 'enemy' && !obstacle.attacking);
+    const milestone = this.score > 1500
+      ? 3 + Math.floor((this.score - 1501) / 500)
+      : this.score > 1000 ? 2 : this.score > 500 ? 1 : 0;
+    if (milestone <= this.progressionMilestone) return;
+    if (this.pendingMilestone !== milestone) {
+      this.pendingMilestone = milestone;
+      this.pendingStage = milestone >= 3 ? Phaser.Math.Between(0, 2) : milestone;
+    }
+    const activeEnemy = this.obstacles.find(obstacle => obstacle.type === 'enemy' && !obstacle.defeated && !obstacle.attacking);
     if (activeEnemy) {
-      this.pendingStage = targetStage;
       this.spawnIn = Math.max(this.spawnIn, 900);
       return;
     }
-    this.switchStage(targetStage);
+    this.switchStage(this.pendingStage, milestone);
   }
 
-  switchStage(stage) {
-    if (stage <= this.stage || this.mode !== 'running') return;
+  switchStage(stage, milestone) {
+    if (milestone <= this.progressionMilestone || this.mode !== 'running') return;
     this.stage = stage;
-    this.stageStartScore = stage * 500;
+    this.stageStartScore = this.score;
+    this.progressionMilestone = milestone;
     this.pendingStage = null;
+    this.pendingMilestone = null;
     this.obstacles.forEach(obstacle => obstacle.image.destroy());
     this.obstacles = [];
     this.spawnIn = 1500;
     this.drawStageBackground();
+    this.setWeather(this.pickWeather(stage));
     this.cameras.main.flash(420, 255, 255, 255);
   }
 
@@ -626,6 +828,7 @@ class PikachuRun extends Phaser.Scene {
     this.scoreText.setText(this.formatScore(this.score));
     this.checkProgression();
     if (this.mode !== 'running') return;
+    this.updateWeatherEffects(delta);
 
     const duckKey = Boolean(this.keys?.down?.isDown);
     this.isDucking = this.grounded && (duckKey || this.touchDuck);
@@ -653,7 +856,7 @@ class PikachuRun extends Phaser.Scene {
     }
 
     this.spawnIn -= delta;
-    if (this.spawnIn <= 0 && !this.pendingStage) {
+    if (this.spawnIn <= 0 && this.pendingStage === null) {
       this.spawnObstacle();
       const difficulty = Math.min(340, this.score * 1.3);
       this.spawnIn = Math.floor(Phaser.Math.Between(1120 - difficulty, 1580 - difficulty) * .9);
@@ -681,12 +884,20 @@ class PikachuRun extends Phaser.Scene {
           this.enemyAttack(obstacle);
           return;
         }
+      } else if (obstacle.type === 'bird') {
+        obstacle.wingTimer += delta;
+        if (obstacle.wingTimer > 125) {
+          obstacle.wingTimer = 0;
+          obstacle.wing = 1 - obstacle.wing;
+          obstacle.image.setTexture(`${obstacle.species}-${obstacle.wing ? 'b' : 'a'}`);
+        }
       }
       if (obstacle.x < -80) {
         obstacle.image.destroy();
         this.obstacles.splice(i, 1);
-      } else if ((obstacle.type === 'hazard' || obstacle.type === 'pokeball') && this.collidesWith(obstacle)) {
-        this.endRun(obstacle.type === 'pokeball' ? 'pokeball' : 'obstacle');
+      } else if ((obstacle.type === 'hazard' || obstacle.type === 'pokeball' || obstacle.type === 'bird') && this.collidesWith(obstacle)) {
+        const reason = obstacle.type === 'pokeball' ? 'pokeball' : obstacle.type === 'bird' ? obstacle.species : 'obstacle';
+        this.endRun(reason);
         return;
       }
     }
@@ -715,6 +926,10 @@ class PikachuRun extends Phaser.Scene {
       top: obstacle.y - obstacle.collider.height / 2,
       bottom: obstacle.y + obstacle.collider.height / 2,
     };
+    if (obstacle.type === 'bird') {
+      const overlapsHorizontally = playerRect.left < obsRect.right && playerRect.right > obsRect.left;
+      return overlapsHorizontally && !duck;
+    }
     if (obstacle.type === 'hazard' || obstacle.type === 'pokeball') {
       obsRect.top = FLOOR_Y - obstacle.collider.height;
       obsRect.bottom = FLOOR_Y - 2;
@@ -851,6 +1066,8 @@ class PikachuRun extends Phaser.Scene {
       charizard: '被噴火龍的火焰擊中！',
       squirtle: '被傑尼龜的水槍擊中！',
       rayquaza: '被烈空坐的龍之波動擊中！',
+      pidgey: '被波波撞到了！',
+      taillow: '被傲骨燕撞到了！',
       pokeball: '糟了！皮卡丘被寶貝球收服了！',
     };
     const titleText = failures[reason] || '哎呀，撞到了！';
