@@ -617,8 +617,9 @@ class PikachuRun extends Phaser.Scene {
   }
 
   pickWeather(stage) {
-    if (stage === 2) return 'clear';
-    return ['sunny', 'rain', 'clear'][Phaser.Math.Between(0, 2)];
+    if (stage === 0) return 'sunny';
+    if (stage === 1) return 'rain';
+    return 'clear';
   }
 
   setWeather(weather) {
@@ -924,7 +925,7 @@ class PikachuRun extends Phaser.Scene {
     if (milestone <= this.progressionMilestone) return;
     if (this.pendingMilestone !== milestone) {
       this.pendingMilestone = milestone;
-      this.pendingStage = milestone >= 3 ? Phaser.Math.Between(0, 2) : milestone;
+      this.pendingStage = milestone >= 3 ? (milestone - 3) % 3 : milestone;
     }
     const activeEnemy = this.obstacles.find(obstacle => obstacle.type === 'enemy' && !obstacle.defeated && !obstacle.attacking);
     if (activeEnemy) {
