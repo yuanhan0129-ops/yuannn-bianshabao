@@ -34,6 +34,7 @@ class PikachuRun extends Phaser.Scene {
     this.weather = 'clear';
     this.weatherClock = 0;
     this.weatherLandmark = null;
+    this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
   }
@@ -484,14 +485,12 @@ class PikachuRun extends Phaser.Scene {
       this.backdrop.beginPath(); this.backdrop.moveTo(0, 330); this.backdrop.lineTo(150, 255); this.backdrop.lineTo(285, 332); this.backdrop.lineTo(445, 244); this.backdrop.lineTo(620, 328); this.backdrop.lineTo(790, 265); this.backdrop.lineTo(960, 332); this.backdrop.lineTo(960, FLOOR_Y); this.backdrop.lineTo(0, FLOOR_Y); this.backdrop.closePath(); this.backdrop.fillPath();
       this.backdrop.fillStyle(0xd9c89f, 1);
       this.backdrop.beginPath(); this.backdrop.moveTo(0, 362); this.backdrop.lineTo(165, 309); this.backdrop.lineTo(315, 366); this.backdrop.lineTo(505, 298); this.backdrop.lineTo(685, 364); this.backdrop.lineTo(845, 313); this.backdrop.lineTo(960, 358); this.backdrop.lineTo(960, FLOOR_Y); this.backdrop.lineTo(0, FLOOR_Y); this.backdrop.closePath(); this.backdrop.fillPath();
-      this.backdrop.fillStyle(0xf4ce72, .84); this.backdrop.fillCircle(814, 136, 37);
       this.ground.fillStyle(0xe8d09e, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
       this.ground.fillStyle(0x8e8e64, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, 4);
       this.ground.lineStyle(1, 0xc6ae7f, .6); this.ground.lineBetween(0, FLOOR_Y + 22, WIDTH, FLOOR_Y + 22);
       this.groundMarks.forEach(mark => { mark.setFillStyle(0xbca979, .55); mark.setSize(Phaser.Math.Between(7, 25), 3); mark.y = Phaser.Math.Between(FLOOR_Y + 16, HEIGHT - 10); });
     } else if (this.stage === 1) {
       this.sky.setFillStyle(0xb8e5ef);
-      this.backdrop.fillStyle(0xf9d878, 1); this.backdrop.fillCircle(795, 130, 43);
       this.backdrop.fillStyle(0x78bdbe, 1); this.backdrop.fillEllipse(182, 305, 270, 95); this.backdrop.fillEllipse(720, 298, 345, 105);
       this.backdrop.fillStyle(0x4baeb2, 1); this.backdrop.fillRect(0, 286, WIDTH, 156);
       this.backdrop.fillStyle(0x73c8c1, 1); this.backdrop.fillRect(0, 330, WIDTH, 74);
@@ -572,9 +571,11 @@ class PikachuRun extends Phaser.Scene {
 
   setWeather(weather) {
     this.weatherLandmark?.destroy();
+    this.weatherSun?.destroy();
     this.weatherTint?.destroy();
     this.weatherFx?.destroy();
     this.weatherLandmark = null;
+    this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
     this.weatherClock = 0;
@@ -594,6 +595,9 @@ class PikachuRun extends Phaser.Scene {
 
     this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x5489b6, sunny ? .075 : .095)
       .setDepth(-5);
+    if (sunny) {
+      this.weatherSun = this.add.circle(814, 136, 38, 0xf4ce72, .92).setDepth(-4);
+    }
     this.weatherFx = this.add.graphics().setDepth(sunny ? 3 : 12);
   }
 
