@@ -519,6 +519,7 @@ class PikachuRun extends Phaser.Scene {
   createWorld() {
     this.sky = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, 0xf4edda).setDepth(-10);
     this.backdrop = this.add.graphics().setDepth(-8);
+    this.desertRidge = this.add.graphics().setDepth(-7.8);
     this.ground = this.add.graphics().setDepth(4);
     this.makeCloud(190, 134, .9);
     this.makeCloud(545, 192, .7);
@@ -532,6 +533,7 @@ class PikachuRun extends Phaser.Scene {
 
   drawStageBackground() {
     this.backdrop.clear();
+    this.desertRidge.clear();
     this.ground.clear();
     this.clouds.forEach(cloud => cloud.setVisible(this.stage !== 2));
 
@@ -539,8 +541,8 @@ class PikachuRun extends Phaser.Scene {
       this.sky.setFillStyle(0xf4edda);
       this.backdrop.fillStyle(0xe8d8b6, 1);
       this.backdrop.beginPath(); this.backdrop.moveTo(0, 330); this.backdrop.lineTo(150, 255); this.backdrop.lineTo(285, 332); this.backdrop.lineTo(445, 244); this.backdrop.lineTo(620, 328); this.backdrop.lineTo(790, 265); this.backdrop.lineTo(960, 332); this.backdrop.lineTo(960, FLOOR_Y); this.backdrop.lineTo(0, FLOOR_Y); this.backdrop.closePath(); this.backdrop.fillPath();
-      this.backdrop.fillStyle(0xd9c89f, 1);
-      this.backdrop.beginPath(); this.backdrop.moveTo(0, 362); this.backdrop.lineTo(165, 309); this.backdrop.lineTo(315, 366); this.backdrop.lineTo(505, 298); this.backdrop.lineTo(685, 364); this.backdrop.lineTo(845, 313); this.backdrop.lineTo(960, 358); this.backdrop.lineTo(960, FLOOR_Y); this.backdrop.lineTo(0, FLOOR_Y); this.backdrop.closePath(); this.backdrop.fillPath();
+      this.desertRidge.fillStyle(0xd9c89f, 1);
+      this.desertRidge.beginPath(); this.desertRidge.moveTo(0, 362); this.desertRidge.lineTo(165, 309); this.desertRidge.lineTo(315, 366); this.desertRidge.lineTo(505, 298); this.desertRidge.lineTo(685, 364); this.desertRidge.lineTo(845, 313); this.desertRidge.lineTo(960, 358); this.desertRidge.lineTo(960, FLOOR_Y); this.desertRidge.lineTo(0, FLOOR_Y); this.desertRidge.closePath(); this.desertRidge.fillPath();
       this.ground.fillStyle(0xe8d09e, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
       this.ground.fillStyle(0x8e8e64, 1); this.ground.fillRect(0, FLOOR_Y, WIDTH, 4);
       this.ground.lineStyle(1, 0xc6ae7f, .6); this.ground.lineBetween(0, FLOOR_Y + 22, WIDTH, FLOOR_Y + 22);
@@ -675,7 +677,7 @@ class PikachuRun extends Phaser.Scene {
     this.weatherLandmark = this.add.image(x, y, texture)
       .setDisplaySize(size.width, size.height)
       .setAlpha(sunny ? .9 : 1)
-      .setDepth(sunny ? -9 : -2.5);
+      .setDepth(sunny ? -7.9 : -2.5);
     if (this.stage === 1 && !sunny) {
       this.weatherWaterFx = this.add.graphics().setDepth(-2.4);
     }
