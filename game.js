@@ -37,6 +37,13 @@ class PikachuRun extends Phaser.Scene {
     this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
+    this.stormClouds = null;
+    this.lightningFx = null;
+    this.weatherFlash = null;
+    this.lightningCountdown = 0;
+    this.lightningRemaining = 0;
+    this.lightningPath = [];
+    this.lightningBranch = [];
   }
 
   create() {
@@ -231,52 +238,97 @@ class PikachuRun extends Phaser.Scene {
 
   drawGroudonTexture(key) {
     const g = this.make.graphics({ x: 0, y: 0, add: false });
-    const ink = 0x633d3a;
-    const red = 0xc95a4e;
-    const light = 0xf0b19a;
+    const ink = 0x542d32;
+    const red = 0xc84343;
+    const brightRed = 0xe65b55;
+    const darkRed = 0x9e3038;
+    const armor = 0xf0ddd0;
 
+    // Thick tail and heavy body establish Groudon's low, armored silhouette.
+    g.fillStyle(darkRed, 1); g.lineStyle(4, ink, 1);
+    g.beginPath(); g.moveTo(143, 68); g.lineTo(197, 54); g.lineTo(225, 65); g.lineTo(201, 74); g.lineTo(225, 83); g.lineTo(184, 91); g.lineTo(143, 82); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillStyle(red, 1); g.fillEllipse(125, 72, 132, 70); g.strokeEllipse(125, 72, 132, 70);
+
+    // Back armor plates and short spikes.
+    g.fillStyle(brightRed, 1); g.lineStyle(3, ink, 1);
+    [[78, 43], [101, 36], [125, 34], [150, 39]].forEach(([x, y], index) => {
+      g.fillTriangle(x, y + 20, x + 11, y - (index % 2 ? 1 : 8), x + 25, y + 22);
+      g.strokeTriangle(x, y + 20, x + 11, y - (index % 2 ? 1 : 8), x + 25, y + 22);
+    });
+
+    // Two sturdy legs with pale claws.
+    g.fillStyle(darkRed, 1); g.lineStyle(4, ink, 1);
+    g.fillRoundedRect(82, 80, 31, 43, 10); g.strokeRoundedRect(82, 80, 31, 43, 10);
+    g.fillRoundedRect(146, 79, 31, 44, 10); g.strokeRoundedRect(146, 79, 31, 44, 10);
+    g.fillStyle(brightRed, 1);
+    g.fillEllipse(91, 93, 25, 20); g.fillEllipse(155, 92, 25, 20);
+    g.fillStyle(armor, 1); g.lineStyle(2, ink, 1);
+    [86, 96, 106].forEach(x => { g.fillTriangle(x, 119, x + 5, 132, x + 10, 119); g.strokeTriangle(x, 119, x + 5, 132, x + 10, 119); });
+    [150, 160, 170].forEach(x => { g.fillTriangle(x, 119, x + 5, 132, x + 10, 119); g.strokeTriangle(x, 119, x + 5, 132, x + 10, 119); });
+
+    // Broad shoulder and head crest with the sharp, layered red plates from the reference.
     g.fillStyle(red, 1); g.lineStyle(4, ink, 1);
-    g.fillTriangle(46, 61, 8, 34, 47, 47); g.strokeTriangle(46, 61, 8, 34, 47, 47);
-    g.fillTriangle(49, 58, 16, 80, 49, 70); g.strokeTriangle(49, 58, 16, 80, 49, 70);
-    g.fillRoundedRect(43, 38, 90, 45, 17); g.strokeRoundedRect(43, 38, 90, 45, 17);
-    g.fillEllipse(136, 47, 47, 39); g.strokeEllipse(136, 47, 47, 39);
-    g.fillTriangle(128, 30, 113, 8, 143, 29); g.strokeTriangle(128, 30, 113, 8, 143, 29);
-    g.fillTriangle(147, 30, 162, 7, 154, 36); g.strokeTriangle(147, 30, 162, 7, 154, 36);
-    g.fillRoundedRect(57, 68, 20, 36, 7); g.strokeRoundedRect(57, 68, 20, 36, 7);
-    g.fillRoundedRect(112, 66, 20, 38, 7); g.strokeRoundedRect(112, 66, 20, 38, 7);
-    g.fillTriangle(48, 43, 28, 31, 53, 51); g.strokeTriangle(48, 43, 28, 31, 53, 51);
-    g.fillTriangle(105, 44, 124, 30, 119, 54); g.strokeTriangle(105, 44, 124, 30, 119, 54);
-    g.fillStyle(light, 1);
-    g.lineStyle(5, light, 1); g.lineBetween(54, 48, 69, 55); g.lineBetween(82, 42, 96, 49); g.lineBetween(104, 41, 116, 47);
-    g.lineStyle(3, ink, 1); g.lineBetween(138, 48, 145, 49); g.fillStyle(0xfff0b8, 1); g.fillCircle(140, 45, 2.5);
+    g.fillEllipse(82, 70, 70, 62); g.strokeEllipse(82, 70, 70, 62);
+    g.beginPath(); g.moveTo(95, 52); g.lineTo(81, 24); g.lineTo(70, 42); g.lineTo(56, 10); g.lineTo(48, 38); g.lineTo(30, 20); g.lineTo(35, 48); g.lineTo(16, 42); g.lineTo(25, 69); g.lineTo(48, 85); g.lineTo(78, 81); g.lineTo(101, 64); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillStyle(brightRed, 1);
+    g.beginPath(); g.moveTo(86, 49); g.lineTo(78, 29); g.lineTo(71, 49); g.lineTo(58, 22); g.lineTo(53, 53); g.lineTo(38, 36); g.lineTo(43, 61); g.lineTo(29, 58); g.lineTo(49, 76); g.lineTo(72, 73); g.closePath(); g.fillPath();
+    g.lineStyle(3, darkRed, 1); g.lineBetween(51, 44, 65, 57); g.lineBetween(69, 40, 80, 53); g.lineBetween(38, 63, 54, 73);
+    g.fillStyle(armor, 1); g.lineStyle(2, ink, 1);
+    g.fillTriangle(37, 76, 57, 79, 46, 90); g.strokeTriangle(37, 76, 57, 79, 46, 90);
+    g.fillTriangle(51, 77, 69, 74, 61, 87); g.strokeTriangle(51, 77, 69, 74, 61, 87);
 
-    g.generateTexture(key, 180, 110);
+    // Eye, nostril, and plated seams make the face readable at game scale.
+    g.fillStyle(0xffd768, 1); g.fillEllipse(35, 55, 13, 7);
+    g.fillStyle(ink, 1); g.fillCircle(34, 55, 2.2);
+    g.fillStyle(0xfff2cf, 1); g.fillCircle(32, 53, 1.2);
+    g.fillStyle(ink, 1); g.fillCircle(21, 65, 2);
+    g.lineStyle(3, 0xf48a74, .95); g.lineBetween(97, 63, 112, 69); g.lineBetween(118, 53, 133, 60); g.lineBetween(137, 58, 149, 64);
+    g.lineStyle(3, darkRed, 1); g.lineBetween(181, 69, 202, 66); g.lineBetween(180, 81, 201, 81);
+
+    g.generateTexture(key, 230, 140);
     g.destroy();
   }
 
   drawKyogreTexture(key) {
     const g = this.make.graphics({ x: 0, y: 0, add: false });
-    const ink = 0x234b70;
-    const blue = 0x3d8fbe;
-    const light = 0x8ed3e6;
+    const ink = 0x173e67;
+    const blue = 0x1677b7;
+    const deepBlue = 0x15548d;
+    const brightBlue = 0x43b6df;
+    const belly = 0xe8f7f4;
+    const red = 0xe84b5b;
 
-    g.fillStyle(blue, 1); g.lineStyle(4, ink, 1);
-    g.fillEllipse(105, 59, 130, 65); g.strokeEllipse(105, 59, 130, 65);
-    g.fillTriangle(51, 56, 7, 30, 31, 70); g.strokeTriangle(51, 56, 7, 30, 31, 70);
-    g.fillTriangle(51, 63, 9, 93, 32, 68); g.strokeTriangle(51, 63, 9, 93, 32, 68);
-    g.fillTriangle(86, 44, 21, 7, 61, 57); g.strokeTriangle(86, 44, 21, 7, 61, 57);
-    g.fillTriangle(86, 72, 19, 111, 62, 63); g.strokeTriangle(86, 72, 19, 111, 62, 63);
-    g.fillTriangle(153, 44, 196, 11, 176, 60); g.strokeTriangle(153, 44, 196, 11, 176, 60);
-    g.fillTriangle(154, 73, 195, 108, 174, 61); g.strokeTriangle(154, 73, 195, 108, 174, 61);
-    g.fillTriangle(161, 47, 206, 37, 178, 59); g.strokeTriangle(161, 47, 206, 37, 178, 59);
-    g.fillTriangle(161, 70, 206, 82, 177, 61); g.strokeTriangle(161, 70, 206, 82, 177, 61);
-    g.fillStyle(light, 1); g.lineStyle(5, light, 1);
-    g.lineBetween(72, 55, 130, 53); g.lineBetween(78, 67, 132, 66);
-    g.lineBetween(48, 39, 68, 47); g.lineBetween(48, 80, 68, 70);
-    g.fillStyle(0xffe4b1, 1); g.fillCircle(156, 53, 3);
-    g.lineStyle(3, ink, 1); g.lineBetween(160, 62, 178, 63);
+    // Wide whale body, forked tail and wing-like fins.
+    g.fillStyle(deepBlue, 1); g.lineStyle(4, ink, 1);
+    g.beginPath(); g.moveTo(173, 61); g.lineTo(205, 45); g.lineTo(224, 17); g.lineTo(217, 57); g.lineTo(239, 72); g.lineTo(213, 82); g.lineTo(222, 119); g.lineTo(194, 92); g.lineTo(169, 80); g.closePath(); g.fillPath(); g.strokePath();
+    g.fillTriangle(94, 53, 48, 14, 71, 67); g.strokeTriangle(94, 53, 48, 14, 71, 67);
+    g.fillTriangle(105, 83, 47, 126, 81, 70); g.strokeTriangle(105, 83, 47, 126, 81, 70);
+    g.fillTriangle(147, 45, 165, 13, 178, 56); g.strokeTriangle(147, 45, 165, 13, 178, 56);
+    g.fillTriangle(150, 85, 176, 119, 177, 69); g.strokeTriangle(150, 85, 176, 119, 177, 69);
+    g.fillEllipse(118, 69, 143, 82); g.strokeEllipse(118, 69, 143, 82);
+    g.fillTriangle(55, 57, 18, 40, 44, 77); g.strokeTriangle(55, 57, 18, 40, 44, 77);
 
-    g.generateTexture(key, 214, 120);
+    // Pale lower jaw and belly, framed by the deep blue back.
+    g.fillStyle(belly, 1); g.fillEllipse(121, 91, 111, 34);
+    g.fillStyle(brightBlue, .95); g.fillEllipse(113, 47, 87, 25);
+    g.lineStyle(2, 0xb8eafa, .8); g.lineBetween(83, 47, 143, 46); g.lineBetween(87, 54, 151, 53);
+
+    // Red markings and white spots are signature details of Kyogre's design.
+    g.lineStyle(7, red, 1); g.beginPath(); g.moveTo(79, 57); g.lineTo(98, 67); g.lineTo(88, 76); g.strokePath();
+    g.beginPath(); g.moveTo(113, 51); g.lineTo(132, 60); g.lineTo(122, 69); g.strokePath();
+    g.beginPath(); g.moveTo(145, 57); g.lineTo(161, 65); g.lineTo(153, 74); g.strokePath();
+    g.fillStyle(0xf4ffff, 1);
+    [[71, 53, 12, 17], [91, 45, 11, 15], [113, 42, 10, 13], [134, 45, 10, 13], [155, 51, 9, 12]].forEach(([x, y, w, h]) => g.fillEllipse(x, y, w, h));
+
+    // Eye and mouth define the whale-like head at the left side.
+    g.fillStyle(0xffd782, 1); g.fillEllipse(49, 57, 12, 8);
+    g.fillStyle(ink, 1); g.fillCircle(48, 57, 2.5);
+    g.fillStyle(0xffffff, 1); g.fillCircle(46, 55, 1.3);
+    g.lineStyle(3, ink, 1); g.lineBetween(29, 72, 48, 76);
+    g.lineStyle(4, brightBlue, .95);
+    g.lineBetween(54, 82, 72, 96); g.lineBetween(71, 89, 87, 101); g.lineBetween(189, 67, 215, 60); g.lineBetween(192, 79, 217, 85);
+
+    g.generateTexture(key, 240, 140);
     g.destroy();
   }
 
@@ -574,12 +626,22 @@ class PikachuRun extends Phaser.Scene {
     this.weatherSun?.destroy();
     this.weatherTint?.destroy();
     this.weatherFx?.destroy();
+    this.stormClouds?.destroy();
+    this.lightningFx?.destroy();
+    this.weatherFlash?.destroy();
     this.weatherLandmark = null;
     this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
+    this.stormClouds = null;
+    this.lightningFx = null;
+    this.weatherFlash = null;
     this.weatherClock = 0;
+    this.lightningRemaining = 0;
+    this.lightningPath = [];
+    this.lightningBranch = [];
     this.weather = this.stage === 2 ? 'clear' : weather;
+    this.clouds.forEach(cloud => cloud.setVisible(this.weather !== 'rain' && this.stage !== 2));
 
     if (this.weather === 'clear') return;
 
@@ -587,16 +649,35 @@ class PikachuRun extends Phaser.Scene {
     const texture = sunny ? 'groudon-weather' : 'kyogre-weather';
     const x = this.stage === 1 ? 765 : 790;
     const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 225 : 207);
-    const size = sunny ? { width: 275, height: 168 } : { width: 315, height: 177 };
+    const size = sunny ? { width: 275, height: 168 } : { width: 330, height: 193 };
+    if (!sunny) {
+      this.stormClouds = this.add.graphics().setDepth(-4);
+      this.stormClouds.fillStyle(0x26384b, .98);
+      this.stormClouds.fillEllipse(45, 86, 190, 72);
+      this.stormClouds.fillEllipse(166, 78, 234, 88);
+      this.stormClouds.fillEllipse(330, 94, 230, 72);
+      this.stormClouds.fillEllipse(501, 76, 260, 88);
+      this.stormClouds.fillEllipse(693, 92, 270, 76);
+      this.stormClouds.fillEllipse(897, 79, 213, 90);
+      this.stormClouds.fillRect(0, 85, WIDTH, 35);
+      this.stormClouds.fillStyle(0x172b3e, .8);
+      this.stormClouds.fillEllipse(166, 105, 260, 44);
+      this.stormClouds.fillEllipse(512, 103, 295, 43);
+      this.stormClouds.fillEllipse(835, 107, 265, 47);
+    }
     this.weatherLandmark = this.add.image(x, y, texture)
       .setDisplaySize(size.width, size.height)
-      .setAlpha(sunny ? .58 : .64)
-      .setDepth(-7);
+      .setAlpha(sunny ? .58 : .86)
+      .setDepth(sunny ? -7 : -2.5);
 
-    this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x5489b6, sunny ? .075 : .095)
-      .setDepth(-5);
+    this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x071422, sunny ? .075 : .47)
+      .setDepth(sunny ? -5 : 7);
     if (sunny) {
       this.weatherSun = this.add.circle(814, 136, 38, 0xf4ce72, .92).setDepth(-4);
+    } else {
+      this.lightningFx = this.add.graphics().setDepth(7.5);
+      this.weatherFlash = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, 0xd9f2ff, 0).setDepth(14);
+      this.lightningCountdown = Phaser.Math.Between(1500, 3000);
     }
     this.weatherFx = this.add.graphics().setDepth(sunny ? 3 : 12);
   }
@@ -624,12 +705,57 @@ class PikachuRun extends Phaser.Scene {
       return;
     }
 
-    this.weatherFx.lineStyle(1.5, 0xa9ddf0, .38);
-    const drift = this.weatherClock * .72;
-    for (let i = 0; i < 72; i++) {
-      const x = (i * 173 + drift) % (WIDTH + 30) - 15;
-      const y = (i * 107 + drift * 1.6) % (HEIGHT + 35) - 18;
-      this.weatherFx.lineBetween(x, y, x - 8, y + 19);
+    this.lightningCountdown -= delta;
+    if (this.lightningCountdown <= 0) {
+      this.lightningRemaining = 210;
+      this.lightningCountdown = Phaser.Math.Between(2600, 4800);
+      const x = Phaser.Math.Between(110, 850);
+      const points = [{ x, y: 0 }];
+      let nextX = x;
+      for (let i = 1; i <= 6; i++) {
+        nextX += Phaser.Math.Between(-34, 34);
+        points.push({ x: nextX, y: i * 38 });
+      }
+      points.push({ x: nextX + Phaser.Math.Between(-28, 28), y: 260 });
+      this.lightningPath = points;
+      this.lightningBranch = [points[3], { x: points[3].x + 30, y: points[3].y + 18 }, { x: points[3].x + 12, y: points[3].y + 38 }];
+    }
+
+    const drift = this.weatherClock * 1.05;
+    this.weatherFx.lineStyle(2, 0x9ed5f3, .56);
+    for (let i = 0; i < 152; i++) {
+      const x = (i * 89 + drift) % (WIDTH + 70) - 35;
+      const y = (i * 137 + drift * 1.9) % (HEIGHT + 45) - 22;
+      this.weatherFx.lineBetween(x, y, x - 15, y + 34);
+    }
+    this.weatherFx.lineStyle(3, 0xd2efff, .22);
+    for (let i = 0; i < 34; i++) {
+      const x = (i * 127 + drift * 1.8) % (WIDTH + 50) - 25;
+      const y = (i * 59 + drift * 2.4) % (HEIGHT + 30) - 15;
+      this.weatherFx.lineBetween(x, y, x - 20, y + 42);
+    }
+
+    this.lightningRemaining = Math.max(0, this.lightningRemaining - delta);
+    if (this.lightningFx) {
+      this.lightningFx.clear();
+      if (this.lightningRemaining > 0) {
+        const fade = Math.min(1, this.lightningRemaining / 115);
+        const drawPath = (path, width, color, alpha) => {
+          this.lightningFx.lineStyle(width, color, alpha * fade);
+          this.lightningFx.beginPath();
+          this.lightningFx.moveTo(path[0].x, path[0].y);
+          path.slice(1).forEach(point => this.lightningFx.lineTo(point.x, point.y));
+          this.lightningFx.strokePath();
+        };
+        drawPath(this.lightningPath, 15, 0x63bfff, .42);
+        drawPath(this.lightningPath, 7, 0xbde9ff, .92);
+        drawPath(this.lightningPath, 3, 0xffffff, 1);
+        drawPath(this.lightningBranch, 6, 0xbde9ff, .9);
+        drawPath(this.lightningBranch, 2, 0xffffff, 1);
+        this.weatherFlash?.setAlpha(Math.min(.19, this.lightningRemaining / 210 * .19));
+      } else {
+        this.weatherFlash?.setAlpha(0);
+      }
     }
   }
 
@@ -745,7 +871,7 @@ class PikachuRun extends Phaser.Scene {
     const isBird = !isEnemy && hazardRoll >= .16 && hazardRoll < .40;
     if (isEnemy) {
       species = enemy.species;
-      const yOffset = species === 'rayquaza' ? Phaser.Math.Between(235, 270) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : Phaser.Math.Between(71, 84);
+      const yOffset = species === 'rayquaza' ? Phaser.Math.Between(235, 270) : species === 'squirtle' ? Phaser.Math.Between(49, 60) : species === 'charizard' ? Phaser.Math.Between(98, 112) : Phaser.Math.Between(71, 84);
       image = this.add.image(WIDTH + 50, FLOOR_Y - yOffset, enemy.frames[0]).setDepth(8);
       image.setOrigin(.5, .5).setDisplaySize(enemy.size.width, enemy.size.height);
       collider = { width: enemy.size.width * .72, height: enemy.size.height * .66 };
@@ -784,7 +910,7 @@ class PikachuRun extends Phaser.Scene {
 
   enemyForStage(stage) {
     const enemies = [
-      { species: 'charizard', label: '噴火龍', frames: ['charizard-a', 'charizard-b'], size: { width: 104, height: 80 } },
+      { species: 'charizard', label: '噴火龍', frames: ['charizard-a', 'charizard-b'], size: { width: 108, height: 94 } },
       { species: 'squirtle', label: '傑尼龜', frames: ['squirtle-a', 'squirtle-b'], size: { width: 91, height: 89 } },
       { species: 'rayquaza', label: '烈空坐', frames: ['rayquaza-a', 'rayquaza-b'], size: { width: 153, height: 83 } },
     ];
