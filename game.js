@@ -672,7 +672,7 @@ class PikachuRun extends Phaser.Scene {
     this.weatherLandmark = this.add.image(x, y, texture)
       .setDisplaySize(size.width, size.height)
       .setAlpha(sunny ? .9 : 1)
-      .setDepth(sunny ? -7 : -2.5);
+      .setDepth(sunny ? -9 : -2.5);
 
     this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x071422, sunny ? .075 : .47)
       .setDepth(sunny ? -5 : 7);
