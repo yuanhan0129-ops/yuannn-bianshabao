@@ -5,25 +5,35 @@ const FLOOR_Y = 442;
 class PikachuRun extends Phaser.Scene {
   constructor() {
     super('PikachuRun');
+    this.best = 0;
+  }
+
+  resetRunState() {
     this.mode = 'ready';
     this.score = 0;
-    this.best = 0;
     this.elapsed = 0;
     this.bonusScore = 0;
     this.stage = 0;
     this.stageStartScore = 0;
+    this.pendingStage = null;
     this.spawnIn = 0;
     this.speed = 360;
     this.feetY = FLOOR_Y;
     this.velocityY = 0;
     this.grounded = true;
     this.touchDuck = false;
+    this.isDucking = false;
+    this.runFrameTime = 0;
     this.obstacles = [];
     this.groundMarks = [];
     this.clouds = [];
+    this.noticeSerial = 0;
+    this.overlay = null;
   }
 
   create() {
+    // Phaser reuses a scene instance after scene.restart(), so reset run state here.
+    this.resetRunState();
     this.readBest();
     this.createCharacterTextures();
     this.createObstacleTextures();
@@ -51,6 +61,7 @@ class PikachuRun extends Phaser.Scene {
   }
 
   createCharacterTextures() {
+    if (this.textures.exists('pika-run-a') && this.textures.exists('pika-run-b')) return;
     this.drawPikachuTexture('pika-run-a', 0);
     this.drawPikachuTexture('pika-run-b', 1);
   }
@@ -108,6 +119,7 @@ class PikachuRun extends Phaser.Scene {
   }
 
   createObstacleTextures() {
+    if (this.textures.exists('cactus-small')) return;
     this.drawCactusTexture('cactus-small', 30, 48, false);
     this.drawCactusTexture('cactus-tall', 42, 62, true);
     this.drawBeachObstacle('beach-shell', 40, 34);
