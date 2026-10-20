@@ -657,7 +657,7 @@ class PikachuRun extends Phaser.Scene {
     const sunny = this.weather === 'sunny';
     const texture = sunny ? 'groudon-weather' : 'kyogre-weather';
     const x = this.stage === 1 ? 765 : 790;
-    const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 317 : 207);
+    const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 296 : 207);
     const size = sunny ? { width: 275, height: 207 } : { width: 230, height: 230 };
     if (!sunny) {
       this.stormClouds = this.add.graphics().setDepth(-4);
@@ -705,7 +705,7 @@ class PikachuRun extends Phaser.Scene {
       for (let x = 0; x <= WIDTH; x += 24) {
         surface.push({
           x,
-          y: 354 + Math.sin(x * .024 + waveTime) * 4 + Math.sin(x * .012 - waveTime * .7) * 3,
+          y: 374 + Math.sin(x * .024 + waveTime) * 4 + Math.sin(x * .012 - waveTime * .7) * 3,
         });
       }
 
@@ -729,7 +729,7 @@ class PikachuRun extends Phaser.Scene {
       this.weatherWaterFx.lineStyle(2, 0x8ce0dc, .72);
       for (let i = 0; i < 22; i++) {
         const x = (i * 61 + this.weatherClock * .12) % WIDTH;
-        const y = 368 + Math.sin(x * .025 + waveTime) * 5;
+        const y = 388 + Math.sin(x * .025 + waveTime) * 5;
         this.weatherWaterFx.lineBetween(x, y, x + 19, y - 1);
       }
     }
