@@ -39,6 +39,7 @@ class PikachuRun extends Phaser.Scene {
     this.weather = 'clear';
     this.weatherClock = 0;
     this.weatherLandmark = null;
+    this.weatherWaterFx = null;
     this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
@@ -627,6 +628,7 @@ class PikachuRun extends Phaser.Scene {
 
   setWeather(weather) {
     this.weatherLandmark?.destroy();
+    this.weatherWaterFx?.destroy();
     this.weatherSun?.destroy();
     this.weatherTint?.destroy();
     this.weatherFx?.destroy();
@@ -634,6 +636,7 @@ class PikachuRun extends Phaser.Scene {
     this.lightningFx?.destroy();
     this.weatherFlash?.destroy();
     this.weatherLandmark = null;
+    this.weatherWaterFx = null;
     this.weatherSun = null;
     this.weatherTint = null;
     this.weatherFx = null;
@@ -652,7 +655,7 @@ class PikachuRun extends Phaser.Scene {
     const sunny = this.weather === 'sunny';
     const texture = sunny ? 'groudon-weather' : 'kyogre-weather';
     const x = this.stage === 1 ? 765 : 790;
-    const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 225 : 207);
+    const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 317 : 207);
     const size = sunny ? { width: 275, height: 207 } : { width: 230, height: 230 };
     if (!sunny) {
       this.stormClouds = this.add.graphics().setDepth(-4);
@@ -673,6 +676,9 @@ class PikachuRun extends Phaser.Scene {
       .setDisplaySize(size.width, size.height)
       .setAlpha(sunny ? .9 : 1)
       .setDepth(sunny ? -9 : -2.5);
+    if (this.stage === 1 && !sunny) {
+      this.weatherWaterFx = this.add.graphics().setDepth(-2.4);
+    }
 
     this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x071422, sunny ? .075 : .47)
       .setDepth(sunny ? -5 : 7);
@@ -690,6 +696,41 @@ class PikachuRun extends Phaser.Scene {
     if (!this.weatherFx) return;
     this.weatherClock += delta;
     this.weatherFx.clear();
+
+    if (this.weatherWaterFx) {
+      const waveTime = this.weatherClock * .002;
+      const surface = [];
+      for (let x = 0; x <= WIDTH; x += 24) {
+        surface.push({
+          x,
+          y: 354 + Math.sin(x * .024 + waveTime) * 4 + Math.sin(x * .012 - waveTime * .7) * 3,
+        });
+      }
+
+      this.weatherWaterFx.clear();
+      this.weatherWaterFx.fillStyle(0x17677b, .86);
+      this.weatherWaterFx.beginPath();
+      this.weatherWaterFx.moveTo(0, HEIGHT);
+      surface.forEach(point => this.weatherWaterFx.lineTo(point.x, point.y));
+      this.weatherWaterFx.lineTo(WIDTH, HEIGHT);
+      this.weatherWaterFx.closePath();
+      this.weatherWaterFx.fillPath();
+
+      this.weatherWaterFx.lineStyle(5, 0xc7fff0, .9);
+      this.weatherWaterFx.beginPath();
+      surface.forEach((point, index) => {
+        if (index === 0) this.weatherWaterFx.moveTo(point.x, point.y);
+        else this.weatherWaterFx.lineTo(point.x, point.y);
+      });
+      this.weatherWaterFx.strokePath();
+
+      this.weatherWaterFx.lineStyle(2, 0x8ce0dc, .72);
+      for (let i = 0; i < 22; i++) {
+        const x = (i * 61 + this.weatherClock * .12) % WIDTH;
+        const y = 368 + Math.sin(x * .025 + waveTime) * 5;
+        this.weatherWaterFx.lineBetween(x, y, x + 19, y - 1);
+      }
+    }
 
     if (this.weather === 'sunny') {
       const centerX = 814;
