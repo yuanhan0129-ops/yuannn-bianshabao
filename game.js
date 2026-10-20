@@ -8,6 +8,11 @@ class PikachuRun extends Phaser.Scene {
     this.best = 0;
   }
 
+  preload() {
+    if (!this.textures.exists('groudon-weather')) this.load.image('groudon-weather', 'assets/groudon.png');
+    if (!this.textures.exists('kyogre-weather')) this.load.image('kyogre-weather', 'assets/kyogre.png');
+  }
+
   resetRunState() {
     this.mode = 'ready';
     this.score = 0;
@@ -153,8 +158,6 @@ class PikachuRun extends Phaser.Scene {
     this.drawPidgeyTexture('pidgey-b', 1);
     this.drawTaillowTexture('taillow-a', 0);
     this.drawTaillowTexture('taillow-b', 1);
-    this.drawGroudonTexture('groudon-weather');
-    this.drawKyogreTexture('kyogre-weather');
   }
 
   drawPokeballTexture(key) {
@@ -650,7 +653,7 @@ class PikachuRun extends Phaser.Scene {
     const texture = sunny ? 'groudon-weather' : 'kyogre-weather';
     const x = this.stage === 1 ? 765 : 790;
     const y = sunny ? (this.stage === 1 ? 232 : 303) : (this.stage === 1 ? 225 : 207);
-    const size = sunny ? { width: 275, height: 168 } : { width: 330, height: 193 };
+    const size = sunny ? { width: 275, height: 207 } : { width: 230, height: 230 };
     if (!sunny) {
       this.stormClouds = this.add.graphics().setDepth(-4);
       this.stormClouds.fillStyle(0x26384b, .98);
@@ -668,7 +671,7 @@ class PikachuRun extends Phaser.Scene {
     }
     this.weatherLandmark = this.add.image(x, y, texture)
       .setDisplaySize(size.width, size.height)
-      .setAlpha(sunny ? .58 : .86)
+      .setAlpha(sunny ? .9 : 1)
       .setDepth(sunny ? -7 : -2.5);
 
     this.weatherTint = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, sunny ? 0xffd15d : 0x071422, sunny ? .075 : .47)
