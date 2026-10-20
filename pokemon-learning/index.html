@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4edda">
+  <meta name="description" content="認識遊戲式學習，並透過十個 Phaser 互動範例探索遊戲機制如何支持學習。">
+  <title>玩出學習力｜遊戲式學習與 Phaser 機制</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    :root { color-scheme: light }
+    :root { --paper: #f4edda }
+    :root { --paperDeep: #ebe1c5 }
+    :root { --ink: #344341 }
+    :root { --muted: #7b8578 }
+    :root { --leaf: #829177 }
+    :root { --gold: #e5bf55 }
+    :root { --line: #e9e1ce }
+    :root { --card: #fffdf8 }
+    * { box-sizing: border-box }
+    html { min-height: 100% }
+    html { overflow-y: scroll }
+    html { scrollbar-gutter: stable }
+    html { scroll-behavior: smooth }
+    body { min-width: 320px }
+    body { min-height: 100vh }
+    body { margin: 0 }
+    body { padding-left: 16px }
+    body { color: var(--ink) }
+    body { font-family: "Noto Sans TC", "PingFang TC", system-ui, sans-serif }
+    body { background: radial-gradient(ellipse at 10% 6%, rgba(245, 205, 112, .22), transparent 28rem), radial-gradient(ellipse at 94% 92%, rgba(121, 157, 121, .15), transparent 28rem), var(--paper) }
+    a { color: inherit }
+    a { text-decoration: none }
+    .siteNav { position: fixed }
+    .siteNav { z-index: 1030 }
+    .siteNav { top: 14px }
+    .siteNav { left: 50% }
+    .siteNav { width: min(calc(100% - 46px), 1100px) }
+    .siteNav { transform: translateX(-50%) }
+    .siteNav { border: 1px solid rgba(73, 71, 52, .12) }
+    .siteNav { border-radius: 18px }
+    .siteNav { background: rgba(255, 253, 248, .94) }
+    .siteNav { box-shadow: 0 10px 28px rgba(74, 67, 45, .12) }
+    .siteNav { backdrop-filter: blur(12px) }
+    .navInner { display: flex }
+    .navInner { align-items: center }
+    .navInner { justify-content: space-between }
+    .navInner { gap: 16px }
+    .navInner { min-height: 58px }
+    .navInner { padding: 8px 15px }
+    .brandLockup { display: flex }
+    .brandLockup { align-items: center }
+    .brandLockup { gap: 9px }
+    .brandLockup { color: var(--ink) }
+    .brandLockup { font-size: 14px }
+    .brandLockup { font-weight: 900 }
+    .brandBolt { display: grid }
+    .brandBolt { width: 35px }
+    .brandBolt { height: 35px }
+    .brandBolt { place-items: center }
+    .brandBolt { border: 1px solid rgba(73, 71, 52, .12) }
+    .brandBolt { border-radius: 12px }
+    .brandBolt { background: #f3cb5b }
+    .brandBolt { font-size: 19px }
+    .navLinks { display: flex }
+    .navLinks { align-items: center }
+    .navLinks { gap: 5px }
+    .navLinks { flex-wrap: wrap }
+    .navLinks a { padding: 9px 12px }
+    .navLinks a { border-radius: 999px }
+    .navLinks a { color: #69776b }
+    .navLinks a { font-size: 12px }
+    .navLinks a { font-weight: 800 }
+    .navLinks a:hover { background: #f8f1dc }
+    .navLinks a:hover { color: #514b35 }
+    .pageMain { padding-top: 104px }
+    .contentWrap { width: min(calc(100% - 36px), 1080px) }
+    .contentWrap { margin-right: auto }
+    .contentWrap { margin-left: auto }
+    .heroCard { position: relative }
+    .heroCard { overflow: hidden }
+    .heroCard { border: 1px solid rgba(68, 77, 59, .12) }
+    .heroCard { border-radius: 28px }
+    .heroCard { background: var(--card) }
+    .heroCard { box-shadow: 0 22px 55px rgba(74, 67, 45, .12), 0 3px 8px rgba(74, 67, 45, .05) }
+    .heroCopy { padding: clamp(26px, 5vw, 56px) }
+    .eyebrow { margin: 0 0 10px }
+    .eyebrow { color: #8a9573 }
+    .eyebrow { font-size: 11px }
+    .eyebrow { font-weight: 900 }
+    .eyebrow { letter-spacing: .18em }
+    .heroTitle { max-width: 620px }
+    .heroTitle { margin: 0 }
+    .heroTitle { color: var(--ink) }
+    .heroTitle { font-size: clamp(32px, 5vw, 58px) }
+    .heroTitle { font-weight: 900 }
+    .heroTitle { letter-spacing: .02em }
+    .heroTitle { line-height: 1.18 }
+    .heroText { max-width: 640px }
+    .heroText { margin: 18px 0 0 }
+    .heroText { color: #6f7a70 }
+    .heroText { font-size: clamp(15px, 2vw, 17px) }
+    .heroText { line-height: 1.9 }
+    .heroActions { display: flex }
+    .heroActions { align-items: center }
+    .heroActions { gap: 12px }
+    .heroActions { flex-wrap: wrap }
+    .heroActions { margin-top: 25px }
+    .goldButton { display: inline-flex }
+    .goldButton { align-items: center }
+    .goldButton { justify-content: center }
+    .goldButton { gap: 8px }
+    .goldButton { padding: 12px 18px }
+    .goldButton { border: 1px solid #d8b84e }
+    .goldButton { border-radius: 999px }
+    .goldButton { background: #f3cb5b }
+    .goldButton { color: #514522 }
+    .goldButton { font-size: 13px }
+    .goldButton { font-weight: 900 }
+    .goldButton { box-shadow: 0 5px 12px rgba(191, 150, 46, .17) }
+    .goldButton:hover { background: #f7d878 }
+    .goldButton:hover { color: #514522 }
+    .textButton { padding: 10px 12px }
+    .textButton { color: #75816f }
+    .textButton { font-size: 13px }
+    .textButton { font-weight: 800 }
+    .heroVisual { display: grid }
+    .heroVisual { min-height: 310px }
+    .heroVisual { place-items: center }
+    .heroVisual { padding: 26px }
+    .heroVisual { background: linear-gradient(180deg, #eee8d8 0%, #e6dfca 53%, #c6bd9d 54%, #d8c99c 100%) }
+    .missionPanel { width: min(100%, 340px) }
+    .missionPanel { padding: 21px }
+    .missionPanel { border: 1px solid rgba(83, 83, 65, .12) }
+    .missionPanel { border-radius: 20px }
+    .missionPanel { background: rgba(255, 253, 248, .95) }
+    .missionPanel { box-shadow: 0 14px 26px rgba(86, 76, 48, .12) }
+    .panelTop { display: flex }
+    .panelTop { align-items: center }
+    .panelTop { justify-content: space-between }
+    .panelTop { gap: 12px }
+    .panelTop { margin-bottom: 20px }
+    .panelLabel { color: #8a9573 }
+    .panelLabel { font-size: 10px }
+    .panelLabel { font-weight: 900 }
+    .panelLabel { letter-spacing: .17em }
+    .levelPill { padding: 6px 10px }
+    .levelPill { border: 1px solid #e9dfc3 }
+    .levelPill { border-radius: 999px }
+    .levelPill { background: #fff5cf }
+    .levelPill { color: #806b31 }
+    .levelPill { font-size: 10px }
+    .levelPill { font-weight: 900 }
+    .missionName { margin: 0 }
+    .missionName { color: #46534b }
+    .missionName { font-size: 22px }
+    .missionName { font-weight: 900 }
+    .missionHint { margin: 7px 0 20px }
+    .missionHint { color: #879083 }
+    .missionHint { font-size: 12px }
+    .missionHint { line-height: 1.7 }
+    .progressTrack { height: 10px }
+    .progressTrack { overflow: hidden }
+    .progressTrack { border-radius: 999px }
+    .progressTrack { background: #eee9dd }
+    .progressFill { width: 68% }
+    .progressFill { height: 100% }
+    .progressFill { border-radius: inherit }
+    .progressFill { background: linear-gradient(90deg, #e8c552, #dcae43) }
+    .progressMeta { display: flex }
+    .progressMeta { justify-content: space-between }
+    .progressMeta { margin-top: 8px }
+    .progressMeta { color: #84907e }
+    .progressMeta { font-size: 10px }
+    .progressMeta { font-weight: 800 }
+    .boltStamp { display: grid }
+    .boltStamp { width: 54px }
+    .boltStamp { height: 54px }
+    .boltStamp { place-items: center }
+    .boltStamp { margin: 18px auto 0 }
+    .boltStamp { border: 1px solid rgba(73, 71, 52, .12) }
+    .boltStamp { border-radius: 17px }
+    .boltStamp { background: #f3cb5b }
+    .boltStamp { color: #48504a }
+    .boltStamp { font-size: 28px }
+    .sectionBlock { padding-top: 72px }
+    .sectionHeading { max-width: 740px }
+    .sectionHeading { margin: 0 auto 26px }
+    .sectionHeading { text-align: center }
+    .sectionKicker { margin: 0 0 8px }
+    .sectionKicker { color: #899574 }
+    .sectionKicker { font-size: 11px }
+    .sectionKicker { font-weight: 900 }
+    .sectionKicker { letter-spacing: .17em }
+    .sectionTitle { margin: 0 }
+    .sectionTitle { color: var(--ink) }
+    .sectionTitle { font-size: clamp(25px, 3.5vw, 38px) }
+    .sectionTitle { font-weight: 900 }
+    .sectionTitle { letter-spacing: .02em }
+    .sectionDescription { max-width: 690px }
+    .sectionDescription { margin: 13px auto 0 }
+    .sectionDescription { color: #778176 }
+    .sectionDescription { font-size: 15px }
+    .sectionDescription { line-height: 1.9 }
+    .definitionCard { padding: clamp(22px, 4vw, 36px) }
+    .definitionCard { border: 1px solid rgba(68, 77, 59, .1) }
+    .definitionCard { border-radius: 24px }
+    .definitionCard { background: rgba(255, 253, 248, .87) }
+    .definitionCard { box-shadow: 0 12px 32px rgba(74, 67, 45, .07) }
+    .definitionLead { margin: 0 }
+    .definitionLead { color: #49574f }
+    .definitionLead { font-size: clamp(19px, 2.5vw, 25px) }
+    .definitionLead { font-weight: 900 }
+    .definitionLead { line-height: 1.65 }
+    .definitionText { margin: 13px 0 0 }
+    .definitionText { color: #778176 }
+    .definitionText { line-height: 1.9 }
+    .principleCard { height: 100% }
+    .principleCard { padding: 22px }
+    .principleCard { border: 1px solid #e9e1ce }
+    .principleCard { border-radius: 20px }
+    .principleCard { background: #fffdf8 }
+    .principleCard { box-shadow: 0 8px 22px rgba(74, 67, 45, .06) }
+    .principleIcon { display: grid }
+    .principleIcon { width: 38px }
+    .principleIcon { height: 38px }
+    .principleIcon { place-items: center }
+    .principleIcon { margin-bottom: 13px }
+    .principleIcon { border-radius: 13px }
+    .principleIcon { background: #fff3c5 }
+    .principleIcon { color: #99792d }
+    .principleIcon { font-size: 17px }
+    .principleTitle { margin: 0 }
+    .principleTitle { color: #4b594f }
+    .principleTitle { font-size: 15px }
+    .principleTitle { font-weight: 900 }
+    .principleText { margin: 8px 0 0 }
+    .principleText { color: #7d877b }
+    .principleText { font-size: 13px }
+    .principleText { line-height: 1.8 }
+    .mechanicGrid { margin-top: 0 }
+    .gameCard { height: 100% }
+    .gameCard { overflow: hidden }
+    .gameCard { border: 1px solid rgba(68, 77, 59, .11) }
+    .gameCard { border-radius: 23px }
+    .gameCard { background: var(--card) }
+    .gameCard { box-shadow: 0 13px 30px rgba(74, 67, 45, .09) }
+    .gameCard { transition: transform .2s ease, box-shadow .2s ease }
+    .gameCard:hover { transform: translateY(-3px) }
+    .gameCard:hover { box-shadow: 0 18px 38px rgba(74, 67, 45, .13) }
+    .cardTopline { display: flex }
+    .cardTopline { align-items: center }
+    .cardTopline { justify-content: space-between }
+    .cardTopline { gap: 12px }
+    .cardTopline { padding: 16px 18px }
+    .cardTopline { border-bottom: 1px solid #eee9de }
+    .phaserLabel { color: #637369 }
+    .phaserLabel { font-size: 11px }
+    .phaserLabel { font-weight: 900 }
+    .phaserLabel { letter-spacing: .07em }
+    .statusPill { display: inline-flex }
+    .statusPill { align-items: center }
+    .statusPill { gap: 6px }
+    .statusPill { padding: 5px 9px }
+    .statusPill { border: 1px solid #e5dfce }
+    .statusPill { border-radius: 999px }
+    .statusPill { background: #fbf8ee }
+    .statusPill { color: #78846f }
+    .statusPill { font-size: 10px }
+    .statusPill { font-weight: 800 }
+    .statusDot { width: 7px }
+    .statusDot { height: 7px }
+    .statusDot { border-radius: 50% }
+    .statusDot { background: #d7ac45 }
+    .cardCopy { padding: 20px 21px 14px }
+    .mechanicNumber { display: inline-grid }
+    .mechanicNumber { width: 30px }
+    .mechanicNumber { height: 30px }
+    .mechanicNumber { place-items: center }
+    .mechanicNumber { margin-right: 8px }
+    .mechanicNumber { border: 1px solid #ead58d }
+    .mechanicNumber { border-radius: 10px }
+    .mechanicNumber { background: #fff4c9 }
+    .mechanicNumber { color: #806a2b }
+    .mechanicNumber { font-size: 11px }
+    .mechanicNumber { font-weight: 900 }
+    .mechanicTitle { display: inline }
+    .mechanicTitle { color: #43534a }
+    .mechanicTitle { font-size: 20px }
+    .mechanicTitle { font-weight: 900 }
+    .mechanicTitle { line-height: 1.5 }
+    .mechanicDesc { margin: 12px 0 0 }
+    .mechanicDesc { color: #7a8579 }
+    .mechanicDesc { font-size: 13px }
+    .mechanicDesc { line-height: 1.85 }
+    .learningTip { margin-top: 14px }
+    .learningTip { padding: 12px 14px }
+    .learningTip { border-left: 3px solid #e4c15d }
+    .learningTip { border-radius: 0 11px 11px 0 }
+    .learningTip { background: #fbf7e9 }
+    .learningTip { color: #677466 }
+    .learningTip { font-size: 12px }
+    .learningTip { line-height: 1.8 }
+    .tipLabel { color: #987c36 }
+    .tipLabel { font-weight: 900 }
+    .gameWindow { overflow: hidden }
+    .gameWindow { margin: 0 14px 14px }
+    .gameWindow { border: 1px solid #e9e1ce }
+    .gameWindow { border-radius: 16px }
+    .gameWindow { background: #fffdf8 }
+    .gameStage { display: grid }
+    .gameStage { width: 100% }
+    .gameStage { min-height: 210px }
+    .gameStage { padding: 12px }
+    .gameStage { place-items: center }
+    .gameStage { overflow: hidden }
+    .gameStage { background: #f7f1df }
+    .gameStage canvas { display: block }
+    .gameStage canvas { width: 100% !important }
+    .gameStage canvas { max-width: 480px }
+    .gameStage canvas { height: auto !important }
+    .gameStage canvas { border-radius: 14px }
+    .gameStage canvas { touch-action: none }
+    .gameToolbar { display: flex }
+    .gameToolbar { align-items: center }
+    .gameToolbar { justify-content: space-between }
+    .gameToolbar { gap: 10px }
+    .gameToolbar { min-height: 38px }
+    .gameToolbar { padding: 0 13px }
+    .gameToolbar { background: #fffdf8 }
+    .gameToolbar { border-bottom: 1px solid #eee9de }
+    .gameToolbarLabel { color: #74816e }
+    .gameToolbarLabel { font-size: 10px }
+    .gameToolbarLabel { font-weight: 900 }
+    .gameToolbarLabel { letter-spacing: .08em }
+    .gameFooter { display: flex }
+    .gameFooter { align-items: center }
+    .gameFooter { justify-content: space-between }
+    .gameFooter { gap: 10px }
+    .gameFooter { padding: 10px 13px }
+    .gameFooter { background: #fffdf8 }
+    .gameFooter { color: #7c8679 }
+    .gameFooter { font-size: 10px }
+    .gameFooter { font-weight: 700 }
+    .pikaRunFrame { display: block }
+    .pikaRunFrame { width: 100% }
+    .pikaRunFrame { height: 760px }
+    .pikaRunFrame { border: 0 }
+    .pikaRunFrame { background: var(--paper) }
+    .pikaRunLink { color: #8c7334 }
+    .pikaRunLink { font-size: 11px }
+    .pikaRunLink { font-weight: 900 }
+    .openDemo { color: #8c7334 }
+    .openDemo { font-weight: 900 }
+    .openDemo:hover { color: #584a25 }
+    .classroomCard { padding: clamp(23px, 4vw, 38px) }
+    .classroomCard { border: 1px solid rgba(68, 77, 59, .11) }
+    .classroomCard { border-radius: 24px }
+    .classroomCard { background: #fffdf8 }
+    .classroomCard { box-shadow: 0 12px 32px rgba(74, 67, 45, .08) }
+    .questionChip { display: inline-flex }
+    .questionChip { align-items: center }
+    .questionChip { gap: 8px }
+    .questionChip { padding: 8px 12px }
+    .questionChip { border: 1px solid #eadfbd }
+    .questionChip { border-radius: 999px }
+    .questionChip { background: #fff7db }
+    .questionChip { color: #756331 }
+    .questionChip { font-size: 12px }
+    .questionChip { font-weight: 800 }
+    .finalNote { max-width: 760px }
+    .finalNote { margin: 24px auto 0 }
+    .finalNote { color: #7c8679 }
+    .finalNote { font-size: 13px }
+    .finalNote { line-height: 1.9 }
+    .siteFooter { margin-top: 55px }
+    .siteFooter { padding: 22px 0 36px }
+    .siteFooter { border-top: 1px solid rgba(115, 122, 99, .18) }
+    .footerInner { display: flex }
+    .footerInner { align-items: center }
+    .footerInner { justify-content: space-between }
+    .footerInner { gap: 12px }
+    .footerInner { flex-wrap: wrap }
+    .footerText { margin: 0 }
+    .footerText { color: #899184 }
+    .footerText { font-size: 11px }
+    .footerLink { color: #806b31 }
+    .footerLink { font-size: 11px }
+    .footerLink { font-weight: 900 }
+    .footerLink:hover { color: #514522 }
+    @media (max-width: 680px) {
+      .siteNav { top: 8px }
+      .siteNav { width: calc(100% - 26px) }
+      .navInner { min-height: 54px }
+      .navInner { padding: 7px 10px }
+      .navLinks { gap: 0 }
+      .navLinks a { padding: 8px 7px }
+      .navLinks a { font-size: 10px }
+      .brandLockup { gap: 6px }
+      .brandLockup { font-size: 11px }
+      .brandBolt { width: 30px }
+      .brandBolt { height: 30px }
+      .pageMain { padding-top: 84px }
+      .contentWrap { width: calc(100% - 24px) }
+      .heroVisual { min-height: 270px }
+      .heroVisual { padding: 17px }
+      .sectionBlock { padding-top: 56px }
+      .gameWindow { margin-right: 10px }
+      .gameWindow { margin-left: 10px }
+      .pikaRunFrame { height: 520px }
+    }
+    @media (max-width: 390px) {
+      .brandLockup span:last-child { display: none }
+      .navLinks a { padding-right: 5px }
+      .navLinks a { padding-left: 5px }
+      .navLinks a { font-size: 9px }
+    }
+  </style>
+</head>
+<body>
+  <div class="siteNav">
+    <nav class="navInner" aria-label="主要導覽">
+      <a class="brandLockup" href="#top">
+        <span class="brandBolt" aria-hidden="true">⚡</span>
+        <span>學習冒險</span>
+      </a>
+      <div class="navLinks">
+        <a href="#about">認識概念</a>
+        <a href="#mechanics">十種機制</a>
+        <a href="#pika-run">PIKA RUN</a>
+        <a href="#design">教學設計</a>
+      </div>
+    </nav>
+  </div>
+
+  <main class="pageMain" id="top">
+    <div class="contentWrap">
+      <section class="heroCard" aria-labelledby="mainTitle">
+        <div class="row g-0 align-items-stretch">
+          <div class="col-lg-7">
+            <div class="heroCopy">
+              <p class="eyebrow">PLAY TO LEARN　✦　PHASER LAB</p>
+              <h1 class="heroTitle" id="mainTitle">讓學習，像闖關一樣有方向</h1>
+              <p class="heroText">把清楚的學習目標放進任務與遊戲規則，讓學生透過操作、選擇、回饋和反思，在遊玩過程中理解概念。</p>
+              <div class="heroActions">
+                <a class="goldButton" href="#mechanics">⚡ 探索十種遊戲機制</a>
+                <a class="textButton" href="#about">先認識遊戲式學習　↓</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="heroVisual">
+              <div class="missionPanel">
+                <div class="panelTop">
+                  <span class="panelLabel">LEARNING QUEST</span>
+                  <span class="levelPill">任務 01</span>
+                </div>
+                <h2 class="missionName">找到學習線索</h2>
+                <p class="missionHint">先設定目標，再讓每一次操作帶來新的理解。</p>
+                <div class="progressTrack" role="img" aria-label="學習任務進度示意">
+                  <div class="progressFill"></div>
+                </div>
+                <div class="progressMeta"><span>探索中</span><span>理解　行動　反思</span></div>
+                <div class="boltStamp" aria-hidden="true">⚡</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sectionBlock" id="about" aria-labelledby="aboutTitle">
+        <div class="sectionHeading">
+          <p class="sectionKicker">THE IDEA</p>
+          <h2 class="sectionTitle" id="aboutTitle">什麼是遊戲式學習</h2>
+          <p class="sectionDescription">遊戲不是教材外面的裝飾，而是承載學習目標的體驗。學生需要做出選擇、嘗試策略、看見結果，並把遊戲經驗連回課堂概念。</p>
+        </div>
+        <div class="definitionCard mb-4">
+          <p class="definitionLead">好的遊戲式學習，會讓「玩得投入」和「學得明白」同時發生。</p>
+          <p class="definitionText">設計時先想清楚學生要理解或練習什麼，再挑選能支持這個目標的遊戲規則。分數、關卡和動畫只有在幫助學生看懂進步時，才會成為有意義的回饋。</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <article class="principleCard">
+              <span class="principleIcon" aria-hidden="true">◎</span>
+              <h3 class="principleTitle">目標先行</h3>
+              <p class="principleText">把課程目標寫成學生能完成、能說明的挑戰。</p>
+            </article>
+          </div>
+          <div class="col-md-4">
+            <article class="principleCard">
+              <span class="principleIcon" aria-hidden="true">⚡</span>
+              <h3 class="principleTitle">行動有回應</h3>
+              <p class="principleText">讓選擇帶來清楚結果，學生才知道下一步怎麼調整。</p>
+            </article>
+          </div>
+          <div class="col-md-4">
+            <article class="principleCard">
+              <span class="principleIcon" aria-hidden="true">✦</span>
+              <h3 class="principleTitle">玩後能反思</h3>
+              <p class="principleText">用討論和解說，把遊戲策略連回真正要學的概念。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="sectionBlock" id="mechanics" aria-labelledby="mechanicsTitle">
+        <div class="sectionHeading">
+          <p class="sectionKicker">TEN PLAY MECHANICS</p>
+          <h2 class="sectionTitle" id="mechanicsTitle">十種可以帶進課堂的遊戲機制</h2>
+          <p class="sectionDescription">每張遊戲卡都直接嵌入 Phaser 範例。試著操作，再想想同一種機制能如何轉成你的學科任務。</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-lg-2 g-4 mechanicGrid">
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">01</span><span class="mechanicTitle">任務目標與關卡</span></h3>
+                <p class="mechanicDesc">把大目標拆成一段段可完成的挑戰。平台跳躍範例讓玩家在移動、收集和抵達終點的過程中持續前進。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>每個平台代表一個概念關卡，答對問題或完成小任務才能解鎖下一段。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　FIRST GAME</span><span class="statusPill">方向鍵操作</span></div>
+                <div class="gameStage" data-mode="platformer" data-example="src/games/firstgame/part10.js" data-module="false" role="application" aria-label="平台跳躍任務範例"></div>
+                <div class="gameFooter"><span>在畫面中開始操作</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">02</span><span class="mechanicTitle">即時回饋與獎勵</span></h3>
+                <p class="mechanicDesc">讓學生馬上看見行動的結果。點擊移動中的金幣會更新分數，對應到答題後清楚呈現正誤、提示和進度。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>答對時給出具體提示，說明用到的概念，讓獎勵同時成為學習線索。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　COIN CLICKER</span><span class="statusPill">點擊金幣</span></div>
+                <div class="gameStage" data-mode="clicker" data-example="src/games/coin clicker/main.js" data-module="true" role="application" aria-label="即時分數回饋範例"></div>
+                <div class="gameFooter"><span>在畫面中開始操作</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">03</span><span class="mechanicTitle">選擇、風險與迴避</span></h3>
+                <p class="mechanicDesc">玩家一邊閃避細菌，一邊收集圓環。這種機制適合練習辨識風險、篩選線索與做出即時決策。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>把錯誤觀念設成需要避開的障礙，把正確線索設成值得收集的物品。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　AVOID THE GERMS</span><span class="statusPill">避開細菌</span></div>
+                <div class="gameStage" data-mode="dodge" data-example="src/games/avoid the germs/main.js" data-module="true" role="application" aria-label="風險迴避與收集範例"></div>
+                <div class="gameFooter"><span>點擊畫面開始</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">04</span><span class="mechanicTitle">物理預測與反覆修正</span></h3>
+                <p class="mechanicDesc">打磚塊需要預測球的反彈方向，再調整擋板位置。每次碰撞都提供一次檢驗假設的機會。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>先請學生預測碰撞後的方向，再操作驗證，把遊戲連結到角度、速度或因果關係。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　BREAKOUT</span><span class="statusPill">移動擋板</span></div>
+                <div class="gameStage" data-mode="breakout" data-example="src/games/breakout/breakout.js" data-module="false" role="application" aria-label="反彈與碰撞預測範例"></div>
+                <div class="gameFooter"><span>移動滑鼠控制擋板</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">05</span><span class="mechanicTitle">逐步加難與熟練</span></h3>
+                <p class="mechanicDesc">貪食蛇每吃到食物就會變長，累積幾次後速度也會增加。難度跟著熟練度提升，鼓勵學生持續練習。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>從少量題目開始，掌握後再提高速度或複雜度，讓挑戰循序漸進。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　SNAKE</span><span class="statusPill">方向鍵操作</span></div>
+                <div class="gameStage" data-mode="snake" data-example="src/games/snake/part7.js" data-module="false" role="application" aria-label="逐步加難的貪食蛇範例"></div>
+                <div class="gameFooter"><span>使用方向鍵移動</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">06</span><span class="mechanicTitle">寶可夢屬性與記憶配對</span></h3>
+                <p class="mechanicDesc">翻開寶可夢和屬性卡，配對時讀取屬性知識，完成後再挑戰三道相剋題。學生會先回想，再把記住的知識用在新情境。</p>
+                <div class="learningTip"><span class="tipLabel">學習目標　</span>認識六種寶可夢的屬性，理解屬性相剋，並用招式和對手的屬性判斷效果。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　POKÉMON TYPE MATCH</span><span class="statusPill">配對屬性與寶可夢</span></div>
+                <div class="gameStage" data-mode="memory" data-example="src/games/card memory/main.js" data-module="true" role="application" aria-label="寶可夢屬性記憶配對與知識挑戰"></div>
+                <div class="gameFooter"><span>翻牌配對，讀取知識，再答三題</span><span><a class="openDemo" target="_blank" rel="noopener">原始 Phaser 範例　↗</a>　<a class="openDemo" href="https://diamondpearl.pokemon.com/en-us/trainersguide/fundamentals/battling/" target="_blank" rel="noopener">屬性相剋指南　↗</a></span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">07</span><span class="mechanicTitle">限時搜尋與快速回想</span></h3>
+                <p class="mechanicDesc">在倒數時間內找出相同表情圖案，讓注意力和快速提取成為遊戲挑戰的一部分。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>將快速辨認融入字詞、符號或概念分類，結束後再請學生說明判斷依據。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　EMOJI MATCH</span><span class="statusPill">限時找配對</span></div>
+                <div class="gameStage" data-mode="speed" data-example="src/games/emoji match/main.js" data-module="true" role="application" aria-label="限時圖案配對範例"></div>
+                <div class="gameFooter"><span>在畫面中開始操作</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">08</span><span class="mechanicTitle">策略規劃與步數資源</span></h3>
+                <p class="mechanicDesc">選擇下一個顏色，逐步擴張同色區域。有限步數讓每一次選擇都需要提前規劃。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>把步數當成可用資源，練習比較方案、預估結果和調整策略。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　FLOOD FILL</span><span class="statusPill">選色擴張區域</span></div>
+                <div class="gameStage" data-mode="flood" data-example="src/games/flood fill/flood-fill.js" data-module="false" role="application" aria-label="有限步數的選色策略範例"></div>
+                <div class="gameFooter"><span>點選顏色改變區域</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">09</span><span class="mechanicTitle">線索推理與排除</span></h3>
+                <p class="mechanicDesc">根據數字判斷附近地雷的位置，再用標記排除不可能的答案。玩家需要蒐集線索並逐步推理。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>把數字提示換成證據、條件或資料，引導學生說出推論過程。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　MINESWEEPER</span><span class="statusPill">點擊探索　右鍵標記</span></div>
+                <div class="gameStage" data-mode="mines" data-example="src/games/minesweeper/minesweeper.js" data-module="false" role="application" aria-label="地雷推理範例"></div>
+                <div class="gameFooter"><span>依數字線索推理</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="gameCard">
+              <div class="cardTopline"><span class="phaserLabel">✦　PHASER PLAYGROUND</span><span class="statusPill"><span class="statusDot"></span>可操作範例</span></div>
+              <div class="cardCopy">
+                <h3><span class="mechanicNumber">10</span><span class="mechanicTitle">空間組合與排列</span></h3>
+                <p class="mechanicDesc">移動相鄰拼圖片，利用空格重新排列圖像。玩家需要觀察整體、規劃順序並逐步解題。</p>
+                <div class="learningTip"><span class="tipLabel">課堂應用　</span>可用來練習順序、地圖位置、流程排序和空間關係。</div>
+              </div>
+              <div class="gameWindow">
+                <div class="gameToolbar"><span class="gameToolbarLabel">PHASER 4　｜　SLIDING PUZZLE</span><span class="statusPill">移動相鄰拼片</span></div>
+                <div class="gameStage" data-mode="sliding" data-example="src/games/sliding puzzle/main.js" data-module="true" role="application" aria-label="滑塊拼圖空間推理範例"></div>
+                <div class="gameFooter"><span>點擊空格旁的拼片</span><a class="openDemo" target="_blank" rel="noopener">開啟範例　↗</a></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="sectionBlock" id="pika-run" aria-labelledby="pikaRunTitle">
+        <div class="sectionHeading">
+          <p class="sectionKicker">YOUR PIKA RUN</p>
+          <h2 class="sectionTitle" id="pikaRunTitle">把屬性知識帶進 PIKA RUN</h2>
+          <p class="sectionDescription">操作線條版皮卡丘跑酷，留意噴火龍、傑尼龜和烈空坐的屬性，再在適當時機使出十萬伏特。</p>
+        </div>
+        <article class="gameCard">
+          <div class="cardTopline"><span class="phaserLabel">✦　PIKA RUN 特別挑戰</span><span class="statusPill"><span class="statusDot"></span>可直接遊玩</span></div>
+          <div class="cardCopy">
+            <h3><span class="mechanicNumber">⚡</span><span class="mechanicTitle">觀察對手，選擇出招時機</span></h3>
+            <p class="mechanicDesc">噴火龍是火與飛行屬性，傑尼龜是水屬性，烈空坐是龍與飛行屬性。想一想電系招式為什麼能對上這些對手，再按 Z 或遊戲中的攻擊按鈕。</p>
+            <div class="learningTip"><span class="tipLabel">遊玩任務　</span>遇到每個對手時先說出牠的屬性，再判斷十萬伏特是否適合。遊戲結束後，試著解釋你的判斷。</div>
+          </div>
+          <div class="gameWindow">
+            <div class="gameToolbar"><span class="gameToolbarLabel">PIKA RUN　｜　ELECTRIC DASH</span><a class="pikaRunLink" href="../" target="_blank" rel="noopener">單獨開啟遊戲　↗</a></div>
+            <iframe class="pikaRunFrame" src="../" title="PIKA RUN 皮卡丘快跑遊戲" loading="lazy" allow="fullscreen"></iframe>
+          </div>
+        </article>
+      </section>
+
+      <section class="sectionBlock" id="design" aria-labelledby="designTitle">
+        <div class="sectionHeading">
+          <p class="sectionKicker">AFTER THE GAME</p>
+          <h2 class="sectionTitle" id="designTitle">把玩過的遊戲變成學習</h2>
+          <p class="sectionDescription">遊戲結束後，留一點時間回看學生的選擇，能幫助他們把剛才的行動轉成可遷移的知識。</p>
+        </div>
+        <div class="classroomCard text-center">
+          <div class="d-flex justify-content-center flex-wrap gap-2">
+            <span class="questionChip">我用了什麼線索</span>
+            <span class="questionChip">哪個策略最有效</span>
+            <span class="questionChip">我會如何用在真實問題</span>
+          </div>
+          <p class="finalNote">可以先讓學生玩，再請他們解釋成功或失敗的原因。老師也可以觀察操作紀錄，找出需要補充說明的概念。十個互動場景都用 Phaser 4 製作，可以直接在卡片中操作。想看完整範例程式，請開啟卡片中的官方範例連結。</p>
+        </div>
+      </section>
+
+      <footer class="siteFooter">
+        <div class="footerInner">
+          <p class="footerText">玩出學習力　✦　讓目標、遊戲與反思連在一起</p>
+          <a class="footerLink" href="https://labs.phaser.io/phaser4-index.html?path=games" target="_blank" rel="noopener">瀏覽 Phaser 官方遊戲範例　↗</a>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <script src="https://labs.phaser.io/build/4.0.0.js" defer></script>
+  <script src="games.js" defer></script>
+</body>
+</html>
